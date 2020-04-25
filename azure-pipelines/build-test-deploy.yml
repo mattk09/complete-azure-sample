@@ -10,14 +10,6 @@ name: $(Date:yyyyMMdd)$(Rev:.r).$(Build.SourceBranch)
 
 variables:
 - template: variables.yml
-- name: projectName
-  value: cse-art-project-template.sln
-- name: buildConfiguration
-  value: Release
-- name: webAppProjectPath
-  value: src/sample/sample.csproj
-- name: artifactName
-  value: SampleDrop
 
 stages:
 - stage: build
@@ -32,7 +24,7 @@ stages:
       displayName: Build $(buildConfiguration)
       inputs:
         command: build
-        projects: $(projectName)
+        projects: $(solutionPath)
         arguments: --configuration $(buildConfiguration)
 
     - task: DotNetCoreCLI@2
@@ -66,9 +58,7 @@ stages:
   displayName: Deploy
   jobs:
   - deployment: deploy
-    environment: cse-art-project-template-dev
-    variables:
-      deploymentName: $[format('WebApp-{0:yyyyMMddHHmmss}.{1}', pipeline.startTime, variables['Build.BuildId'])]
+    environment: $(environmentName)
     pool:
       vmImage: ubuntu-latest
     strategy:
@@ -78,17 +68,34 @@ stages:
           - task: AzureResourceGroupDeployment@2
             displayName: Azure Deployment
             inputs:
-              azureSubscription: Commerical Software Engineering - Agile Response (ERICMAI) (b8dc8f25-7e85-4e7e-bde2-3d621b696e9b)
-              resourceGroupName: cse-art-project-template-dev
-              location: westus
-              csmFile: $(Pipeline.Workspace)/$(artifactName)/arm/azure-deploy.json
-              overrideParameters: -name cse-art-project-template-dev
+              azureSubscription: $(azureSubscriptionServiceConnectionName)
+              resourceGroupName: $(resourceGroupName)
+              location: $(location)
+              csmFile: $(Pipeline.Workspace)/$(artifactName)/$(armTemplateFileArtifactPath)
+              overrideParameters: -name $(armTemplateParameterName)
               deploymentMode: Complete
               deploymentName: $(deploymentName)
               deploymentOutputs: ArmDeploymentOutput
 
+          - pwsh: |
+              $output = ConvertFrom-Json '$(ArmDeploymentOutput)' -Depth 10
+
+              $WebAppName  = $output.result.value.WebAppName
+
+              Write-Host "##vso[task.setvariable variable=WEB_APP_NAME]$WebAppName"
+            failOnStderr: true
+            displayName: Create variables from ARM deployment outputs
+
+          - task: AzureRmWebAppDeployment@4
+            displayName: Azure App Service Deploy
+            inputs:
+              azureSubscription: $(azureSubscriptionServiceConnectionName)
+              resourceGroupName: $(resourceGroupName)
+              webAppName: $(WEB_APP_NAME)
+              packageForLinux: $(Pipeline.Workspace)/$(artifactName)/$(webAppProjectName).zip
+
           - script: |
-              echo $ArmDeploymentOutput
+              echo $(ArmDeploymentOutput)
               pwd
               printenv | sort
               ls -R $(Pipeline.Workspace)
