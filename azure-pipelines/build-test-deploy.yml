@@ -1,0 +1,32 @@
+trigger:
+  branches:
+    include:
+    - master
+  paths:
+    include:
+    - src/
+
+name: $(Date:yyyyMMdd)$(Rev:.r).$(Build.SourceBranch)
+
+variables:
+- template: variables.yml
+- name: projectName
+  value: cse-art-project-template.sln
+- name: buildConfiguration
+  value: Release
+
+stages:
+- stage: build
+  displayName: Build
+  jobs:
+  - job: build
+    displayName: Build netcoreapp3.1
+    pool:
+      vmImage: 'ubuntu-latest'
+    steps:
+    - task: DotNetCoreCLI@2
+      displayName: Build $(buildConfiguration)
+      inputs:
+        command: build
+        projects: $(projectName)
+        arguments: --configuration $(buildConfiguration)

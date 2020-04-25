@@ -1,0 +1,2 @@
+variables:
+  isMasterMerge: $[eq(variables['Build.SourceBranch'], 'refs/heads/master')]
