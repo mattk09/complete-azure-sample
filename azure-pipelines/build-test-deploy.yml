@@ -14,6 +14,10 @@ variables:
   value: cse-art-project-template.sln
 - name: buildConfiguration
   value: Release
+- name: webAppProjectPath
+  value: src/sample/sample.csproj
+- name: artifactName
+  value: SampleDrop
 
 stages:
 - stage: build
@@ -22,7 +26,7 @@ stages:
   - job: build
     displayName: Build netcoreapp3.1
     pool:
-      vmImage: 'ubuntu-latest'
+      vmImage: ubuntu-latest
     steps:
     - task: DotNetCoreCLI@2
       displayName: Build $(buildConfiguration)
@@ -30,3 +34,23 @@ stages:
         command: build
         projects: $(projectName)
         arguments: --configuration $(buildConfiguration)
+
+    - task: DotNetCoreCLI@2
+      displayName: Publish Web App
+      inputs:
+        command: publish
+        projects: $(webAppProjectPath)
+        arguments: --configuration $(buildConfiguration) --output $(Build.ArtifactStagingDirectory)
+
+    - task: PublishBuildArtifacts@1
+      displayName: Publish Build Artifacts
+      inputs:
+        pathtoPublish: $(Build.ArtifactStagingDirectory)
+        artifactName: $(artifactName)
+
+    - script: |
+        pwd
+        printenv | sort
+        ls -R $(Pipeline.Workspace)
+      displayName: Debug script
+      condition: always()
