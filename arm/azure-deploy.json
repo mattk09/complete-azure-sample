@@ -1,0 +1,146 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "name": {
+      "type": "string",
+      "defaultValue": "[resourceGroup().name]"
+    },
+    "location": {
+      "type": "string",
+      "defaultValue": "[resourceGroup().location]"
+    }
+  },
+  "variables": {
+    "appServicePlanName": "[parameters('name')]",
+    "appServicePlanSku": {
+      "name": "S3",
+      "tier": "Standard",
+      "size": "S3",
+      "family": "S",
+      "capacity": 1
+    },
+    "webAppName": "[parameters('name')]",
+    "storageAccountName": "[toLower(take(replace(replace(parameters('name'), '-', ''), '_', ''), 24))]",
+    "storageAccountSku": "Standard_LRS",
+    "appInsightsName": "[parameters('name')]",
+    "keyVaultName": "[toLower(take(replace(replace(parameters('name'), '-', ''), '_', ''), 24))]",
+    "keyVaultSku": {
+      "family": "A",
+      "name": "Standard"
+    }
+  },
+  "resources": [
+    {
+      "name": "[variables('appServicePlanName')]",
+      "type": "Microsoft.Web/serverfarms",
+      "location": "[parameters('location')]",
+      "apiVersion": "2015-08-01",
+      "sku": "[variables('appServicePlanSku')]",
+      "properties": {
+      }
+    },
+    {
+      "name": "[variables('webAppName')]",
+      "type": "Microsoft.Web/sites",
+      "location": "[parameters('location')]",
+      "identity": {
+        "type": "SystemAssigned"
+      },
+      "apiVersion": "2015-08-01",
+      "properties": {
+        "serverFarmId": "[resourceId('Microsoft.Web/serverFarms', variables('appServicePlanName'))]",
+        "httpsOnly": true
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Web/serverfarms', variables('appServicePlanName'))]"
+      ]
+    },
+    {
+      "type": "Microsoft.Storage/storageAccounts",
+      "name": "[variables('storageAccountName')]",
+      "apiVersion": "2018-02-01",
+      "kind": "StorageV2",
+      "location": "[parameters('location')]",
+      "sku": {
+        "name": "[variables('storageAccountSku')]"
+      }
+    },
+    {
+      "name": "[variables('appInsightsName')]",
+      "type": "Microsoft.Insights/components",
+      "location": "[parameters('location')]",
+      "apiVersion": "2014-04-01",
+      "properties": {
+      }
+    },
+    {
+      "name": "[variables('keyVaultName')]",
+      "type": "Microsoft.KeyVault/vaults",
+      "apiVersion": "2018-02-14",
+      "location": "[parameters('location')]",
+      "properties": {
+        "tenantId": "[subscription().tenantId]",
+        "enabledForDeployment": false,
+        "enabledForTemplateDeployment": true,
+        "enabledForDiskEncryption": false,
+        "accessPolicies": [
+          {
+            "tenantId": "[reference(concat('Microsoft.Web/sites/', variables('webAppName')), '2018-02-01', 'Full').identity.tenantId]",
+            "objectId": "[reference(concat('Microsoft.Web/sites/', variables('webAppName')), '2018-02-01', 'Full').identity.principalId]",
+            "permissions": {
+              "secrets": [
+                "Get",
+                "List"
+              ]
+            }
+          }
+        ],
+        "sku": "[variables('keyVaultSku')]"
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Web/sites', variables('webAppName'))]"
+      ]
+    },
+    {
+      "name": "[concat(variables('keyVaultName'), '/ApplicationInsights--InstrumentationKey')]",
+      "type": "Microsoft.KeyVault/vaults/secrets",
+      "apiVersion": "2016-10-01",
+      "location": "[parameters('location')]",
+      "properties": {
+        "value": "[reference(concat('Microsoft.Insights/components/', variables('appInsightsName'))).InstrumentationKey]",
+        "attributes": {
+          "enabled": true
+        }
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]",
+        "[resourceId('Microsoft.Insights/components', variables('appInsightsName'))]"
+      ]
+    },
+    {
+      "name": "[concat(variables('keyVaultName'), '/StorageAccount--Key')]",
+      "type": "Microsoft.KeyVault/vaults/secrets",
+      "apiVersion": "2016-10-01",
+      "location": "[parameters('location')]",
+      "properties": {
+        "value": "[listKeys(resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName')),'2018-07-01').keys[0].value]",
+        "attributes": {
+          "enabled": true
+        }
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]",
+        "[resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName'))]"
+      ]
+    }
+  ],
+  "outputs": {
+    "result": {
+      "type": "object",
+      "value": {
+        "WebAppName": "[variables('webAppName')]"
+      }
+    }
+  }
+}

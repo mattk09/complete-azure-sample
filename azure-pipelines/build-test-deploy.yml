@@ -42,6 +42,13 @@ stages:
         projects: $(webAppProjectPath)
         arguments: --configuration $(buildConfiguration) --output $(Build.ArtifactStagingDirectory)
 
+    - task: CopyFiles@2
+      displayName: Copy ARM template to ArtifactStagingDirectory
+      inputs:
+        sourceFolder: arm
+        contents: '*'
+        targetFolder: $(Build.ArtifactStagingDirectory)/arm
+
     - task: PublishBuildArtifacts@1
       displayName: Publish Build Artifacts
       inputs:
@@ -54,3 +61,36 @@ stages:
         ls -R $(Pipeline.Workspace)
       displayName: Debug script
       condition: always()
+
+- stage: deploy
+  displayName: Deploy
+  jobs:
+  - deployment: deploy
+    environment: cse-art-project-template-dev
+    variables:
+      deploymentName: $[format('WebApp-{0:yyyyMMddHHmmss}.{1}', pipeline.startTime, variables['Build.BuildId'])]
+    pool:
+      vmImage: ubuntu-latest
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+          - task: AzureResourceGroupDeployment@2
+            displayName: Azure Deployment
+            inputs:
+              azureSubscription: Commerical Software Engineering - Agile Response (ERICMAI) (b8dc8f25-7e85-4e7e-bde2-3d621b696e9b)
+              resourceGroupName: cse-art-project-template-dev
+              location: westus
+              csmFile: $(Pipeline.Workspace)/$(artifactName)/arm/azure-deploy.json
+              overrideParameters: -name cse-art-project-template-dev
+              deploymentMode: Complete
+              deploymentName: $(deploymentName)
+              deploymentOutputs: ArmDeploymentOutput
+
+          - script: |
+              echo $ArmDeploymentOutput
+              pwd
+              printenv | sort
+              ls -R $(Pipeline.Workspace)
+            displayName: Debug script
+            condition: always()
