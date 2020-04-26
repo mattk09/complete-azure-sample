@@ -4,6 +4,8 @@ trigger:
     - master
   paths:
     include:
+    - arm/
+    - azure-pipelines/
     - src/
 
 name: $(Date:yyyyMMdd)$(Rev:.r).$(Build.SourceBranch)
