@@ -2,6 +2,7 @@ trigger:
   branches:
     include:
     - master
+    - '*'
   paths:
     include:
     - arm/
@@ -30,6 +31,29 @@ stages:
         arguments: --configuration $(buildConfiguration)
 
     - task: DotNetCoreCLI@2
+      displayName: Run Unit Tests and Code Coverage
+      inputs:
+        command: test
+        arguments: --configuration $(buildConfiguration) --settings coverlet.runsettings.xml
+
+    - task: DotNetCoreCLI@2
+      displayName: Install ReportGenerator Tool
+      inputs:
+        command: custom
+        custom: tool
+        arguments: install --tool-path . dotnet-reportgenerator-globaltool
+
+    - script: |
+        ./reportgenerator -reports:$(Agent.TempDirectory)/**/coverage.cobertura.xml -targetdir:$(Build.SourcesDirectory)/CodeCoverage -reporttypes:Cobertura
+      displayName: Create Code Coverage Report
+
+    - task: PublishCodeCoverageResults@1
+      displayName: Publish Code Coverage Report
+      inputs:
+        codeCoverageTool: Cobertura
+        summaryFileLocation: $(Build.SourcesDirectory)/CodeCoverage/Cobertura.xml
+
+    - task: DotNetCoreCLI@2
       displayName: Publish Web App
       inputs:
         command: publish
@@ -45,6 +69,7 @@ stages:
 
     - task: PublishBuildArtifacts@1
       displayName: Publish Build Artifacts
+      condition: and(succeeded(), eq(variables['isMasterMerge'], 'True'))
       inputs:
         pathtoPublish: $(Build.ArtifactStagingDirectory)
         artifactName: $(artifactName)
@@ -58,6 +83,7 @@ stages:
 
 - stage: deploy
   displayName: Deploy
+  condition: and(succeeded(), eq(variables['isMasterMerge'], 'True'))
   jobs:
   - deployment: deploy
     environment: $(environmentName)
