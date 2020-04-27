@@ -1,3 +1,4 @@
+using Microsoft.ApplicationInsights.Extensibility;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -16,8 +17,12 @@ namespace Sample
         public IConfiguration Configuration { get; }
 
         // This method gets called by the runtime. Use this method to add services to the container.
-        public static void ConfigureServices(IServiceCollection services)
+        public void ConfigureServices(IServiceCollection services)
         {
+            // By default this will look for 'ApplicationInsights:InstrumentationKey' in the configuration.
+            // This is added automatically by our 'AddAzureKeyVault' call in Program.cs
+            services.AddApplicationInsightsTelemetry(this.Configuration);
+
             services.AddControllers();
         }
 

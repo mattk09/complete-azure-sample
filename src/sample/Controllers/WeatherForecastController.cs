@@ -25,16 +25,24 @@ namespace Sample.Controllers
         [HttpGet]
         public IEnumerable<WeatherForecast> Get()
         {
-            logger.LogInformation("WeatherForecast Get called");
-
-            var rng = new Random();
-            return Enumerable.Range(1, 5).Select(index => new WeatherForecast
+            using (logger.BeginScope(new Dictionary<string, object> { { "SampleKey", "SampleValue" } }))
             {
-                Date = DateTime.Now.AddDays(index),
-                TemperatureC = rng.Next(-20, 55),
-                Summary = Summaries[rng.Next(Summaries.Length)],
-            })
-            .ToArray();
+                var random = new Random();
+
+                var forecast = Enumerable.Range(1, 5)
+                    .Select(
+                        index => new WeatherForecast
+                        {
+                            Date = DateTime.Now.AddDays(index),
+                            TemperatureC = random.Next(-20, 55),
+                            Summary = Summaries[random.Next(Summaries.Length)],
+                        })
+                    .ToList();
+
+                logger.LogInformation($"WeatherForecast Get called.  Returning {forecast.Count} entries");
+
+                return forecast;
+            }
         }
     }
 }

@@ -98,7 +98,7 @@ stages:
   condition: and(succeeded(), eq(variables['shouldDeploy'], 'True'))
   jobs:
   - deployment: deploy
-    displayName: Build ASP.NET Core App 3.1
+    displayName: Deploy ASP.NET Core App 3.1
     environment: $(environmentName)
     pool:
       vmImage: ubuntu-latest
