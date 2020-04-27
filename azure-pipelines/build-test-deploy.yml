@@ -132,6 +132,7 @@ stages:
               azureSubscription: $(azureSubscriptionServiceConnectionName)
               resourceGroupName: $(resourceGroupName)
               webAppName: $(WEB_APP_NAME)
+              webAppKind: webAppLinux
               packageForLinux: $(Pipeline.Workspace)/$(artifactName)/$(webAppProjectName).zip
 
           - script: |
