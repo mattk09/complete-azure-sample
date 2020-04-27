@@ -11,15 +11,27 @@ trigger:
 
 name: $(Date:yyyyMMdd)$(Rev:.r).$(Build.SourceBranch)
 
+parameters:
+- name: overrideDeploy
+  displayName: Trigger deploy if not on master branch?
+  type: boolean
+  default: false
+
 variables:
 - template: variables.yml
+- name: shouldDeploy
+  value: >-
+    $[or(
+      eq(variables['isMasterMerge'], 'True'),
+      ${{ parameters.overrideDeploy }}
+    )]
 
 stages:
 - stage: build
   displayName: Build
   jobs:
   - job: build
-    displayName: Build netcoreapp3.1
+    displayName: Build ASP.NET Core App 3.1
     pool:
       vmImage: ubuntu-latest
     steps:
@@ -69,7 +81,7 @@ stages:
 
     - task: PublishBuildArtifacts@1
       displayName: Publish Build Artifacts
-      condition: and(succeeded(), eq(variables['isMasterMerge'], 'True'))
+      condition: and(succeeded(), eq(variables['shouldDeploy'], 'True'))
       inputs:
         pathtoPublish: $(Build.ArtifactStagingDirectory)
         artifactName: $(artifactName)
@@ -83,9 +95,10 @@ stages:
 
 - stage: deploy
   displayName: Deploy
-  condition: and(succeeded(), eq(variables['isMasterMerge'], 'True'))
+  condition: and(succeeded(), eq(variables['shouldDeploy'], 'True'))
   jobs:
   - deployment: deploy
+    displayName: Build ASP.NET Core App 3.1
     environment: $(environmentName)
     pool:
       vmImage: ubuntu-latest
