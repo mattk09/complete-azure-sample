@@ -134,6 +134,8 @@ stages:
               webAppName: $(WEB_APP_NAME)
               webAppKind: webAppLinux
               packageForLinux: $(Pipeline.Workspace)/$(artifactName)/$(webAppProjectName).zip
+              runtimeStack: DOTNETCORE|3.1
+              startupCommand: /home/site/wwwroot/$(webAppProjectName)
 
           - script: |
               echo $(ArmDeploymentOutput)

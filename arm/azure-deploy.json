@@ -32,31 +32,37 @@
   },
   "resources": [
     {
-      "name": "[variables('appServicePlanName')]",
       "type": "Microsoft.Web/serverfarms",
+      "apiVersion": "2018-02-01",
+      "name": "[variables('appServicePlanName')]",
       "location": "[parameters('location')]",
-      "apiVersion": "2015-08-01",
       "sku": "[variables('appServicePlanSku')]",
+      "kind": "linux",
       "properties": {
+        "reserved": true
       }
     },
     {
-      "name": "[variables('webAppName')]",
       "type": "Microsoft.Web/sites",
+      "apiVersion": "2018-11-01",
+      "name": "[variables('webAppName')]",
       "location": "[parameters('location')]",
       "identity": {
         "type": "SystemAssigned"
       },
-      "apiVersion": "2015-08-01",
+      "kind": "app",
       "properties": {
         "serverFarmId": "[resourceId('Microsoft.Web/serverFarms', variables('appServicePlanName'))]",
+        "siteConfig": {
+            "linuxFxVersion": "DOTNETCORE|3.1"
+        },
         "httpsOnly": true
       },
       "resources": [
         {
           "name": "appsettings",
           "type": "config",
-          "apiVersion": "2015-08-01",
+          "apiVersion": "2018-11-01",
           "properties": {
             "KeyVaultNameFromDeployment": "[variables('keyVaultName')]"
           },
