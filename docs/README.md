@@ -15,6 +15,9 @@ This project is meant to be a general starting point for most dotnet projects by
   - Release
     - Deploys Azure resources
     - Uses environments
+- Swagger using [NSwag][swagger-nswag]
+  - [Swashbuckle][swagger-swashbuckle] is another alternative
+  - Navigate to `/swagger` endpoint to view
 
 Wishlist:
 
@@ -25,7 +28,6 @@ Wishlist:
 - Simulators for services (storage, auth)
 - Health probes
 - Extended ApplicationInsights alerts/monitoring/dashboard examples
-- HealthProbes
 - WebApp Deployment Slots
 - Best practices for managing KeyVault contents (How do we add external secrets not coming from ARM)
 
@@ -53,3 +55,6 @@ It is not always easy to see in the code, but this project gains a lot from usin
 [code-coverage]: https://docs.microsoft.com/en-us/azure/devops/pipelines/ecosystems/dotnet-core?view=azure-devops#collect-code-coverage
 [dotnet-configuration]: https://docs.microsoft.com/en-us/aspnet/core/fundamentals/configuration/?view=aspnetcore-3.1
 [dotnet-configuration-default-builder]: https://docs.microsoft.com/en-us/dotnet/api/microsoft.extensions.hosting.host.createdefaultbuilder?view=dotnet-plat-ext-3.1
+
+[swagger-nswag]: https://docs.microsoft.com/en-us/aspnet/core/tutorials/getting-started-with-nswag?view=aspnetcore-3.1&tabs=visual-studio
+[swagger-swashbucke]: https://docs.microsoft.com/en-us/aspnet/core/tutorials/getting-started-with-swashbuckle?view=aspnetcore-3.1&tabs=visual-studio
