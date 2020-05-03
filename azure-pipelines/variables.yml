@@ -1,14 +1,23 @@
+
+# Use parameters if you want them to influence the general variables
+parameters:
+- name: resourceGroupName
+  type: string
+  default: cse-art-project-template
+
 variables:
+- name: baseName
+  value: ${{ parameters.resourceGroupName }}
 - name: isMasterMerge
   value: $[eq(variables['Build.SourceBranch'], 'refs/heads/master')]
 - name: environmentName
-  value: cse-art-project-template-dev
+  value: $(baseName)
 - name: location
   value: westus
 - name: azureSubscriptionServiceConnectionName
   value: Commerical Software Engineering - Agile Response (ERICMAI) (b8dc8f25-7e85-4e7e-bde2-3d621b696e9b)
 - name: resourceGroupName
-  value: cse-art-project-template-dev
+  value: $(baseName)
 - name: solutionPath
   value: cse-art-project-template.sln
 - name: webAppProjectName
@@ -22,6 +31,6 @@ variables:
 - name: deploymentName
   value: $[format('WebApp-{0:yyyyMMddHHmmss}.{1}', pipeline.startTime, variables['Build.BuildId'])]
 - name: armTemplateParameterName
-  value: cse-art-project-template-dev
+  value: $(baseName)
 - name: armTemplateFileArtifactPath
   value: arm/azure-deploy.json

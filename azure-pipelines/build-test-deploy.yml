@@ -15,9 +15,15 @@ parameters:
   displayName: Trigger deploy if not on master branch?
   type: boolean
   default: false
+- name: resourceGroupName
+  displayName: Resource Group to use if deploying
+  type: string
+  default: cse-art-project-template-dev
 
 variables:
 - template: variables.yml
+  parameters:
+    resourceGroupName: ${{ parameters.resourceGroupName }}
 - name: shouldDeploy
   value: >-
     $[or(
@@ -109,6 +115,7 @@ stages:
             displayName: Azure Deployment
             inputs:
               azureSubscription: $(azureSubscriptionServiceConnectionName)
+              action: Create Or Update Resource Group
               resourceGroupName: $(resourceGroupName)
               location: $(location)
               csmFile: $(Pipeline.Workspace)/$(artifactName)/$(armTemplateFileArtifactPath)
