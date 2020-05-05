@@ -6,6 +6,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
+using Sample.Core;
+
 namespace Sample
 {
     public class Startup
@@ -23,6 +25,8 @@ namespace Sample
             // By default this will look for 'ApplicationInsights:InstrumentationKey' in the configuration.
             // This is added automatically by our 'AddAzureKeyVault' call in Program.cs
             services.AddApplicationInsightsTelemetry(this.Configuration);
+
+            services.AddSingleton<IWeatherForecaster, WeatherForecaster>();
 
             services.AddControllers();
 

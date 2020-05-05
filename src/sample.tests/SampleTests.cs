@@ -1,5 +1,5 @@
 using System;
-using Sample;
+using Sample.Core.Models;
 using Xunit;
 
 namespace Sample.Tests
