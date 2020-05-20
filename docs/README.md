@@ -10,6 +10,7 @@ This project is meant to be a general starting point for most dotnet projects by
   - Analyzers
     - FxCop
     - StyleCop
+    - Document spell check and Markdown Lint
   - Test
   - Code Coverage (coverlet)
   - Release
