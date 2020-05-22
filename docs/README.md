@@ -1,6 +1,8 @@
 # Introduction
 
-This project is meant to be a general starting point for most dotnet projects by providing the boiler plate code for basic functionality, testing, security, and CI/CD using best practices.  You may not need all components or pieces may be missing based on your own needs but it should still give a great foundation to begin.
+This project is meant to be a general starting point for most common dotnet projects, provides a boiler plate code for basic core engineering fundamentals, like observability, testing, security, and CI/CD, including industry known best practices.
+
+Depending on your project needs, you may not need all components or pieces included, perhaps, others may be missing, however, this should give you a great foundation to begin with.
 
 ## Project Features
 
