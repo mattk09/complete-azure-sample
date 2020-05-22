@@ -4,7 +4,7 @@ trigger:
       - '*'
   paths:
     include:
-      - /*.md
+      - '**/*.md'
 
 pool:
   vmImage: ubuntu-latest
