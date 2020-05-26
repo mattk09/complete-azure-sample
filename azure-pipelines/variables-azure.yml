@@ -1,0 +1,32 @@
+
+# Use parameters if you want them to influence the general variables
+parameters:
+- name: resourceGroupNameBase
+  type: string
+
+- name: baseName
+  type: string
+
+- name: environmentSuffix
+  type: string
+
+variables:
+- name: armTemplateNameParameter
+  value: ${{ parameters.baseName }}-${{ parameters.environmentSuffix }}
+
+- name: environmentName
+  value: ${{ parameters.baseName }}-${{ parameters.environmentSuffix }}
+
+- name: location
+  value: westus
+
+# Configure here, in a group, or portal variables
+- name: azureSubscriptionServiceConnectionName
+  value: $[variables['azureSubscriptionServiceConnectionNameFromAdoPipelineSettings']]
+
+# Use the resource group name base supplied if triggered manually,
+# otherwise fallback to configuration from portal variables
+- name: resourceGroupNameFromParameterOrSettings
+  value: $[coalesce('${{ parameters.resourceGroupNameBase }}', variables['resourceGroupNameBaseFromAdoPipelineSettings'])]
+- name: resourceGroupName
+  value: $(resourceGroupNameFromParameterOrSettings)-${{ parameters.environmentSuffix }}
