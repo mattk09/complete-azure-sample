@@ -1,6 +1,6 @@
 variables:
 - name: solutionPath
-  value: cse-art-project-template.sln
+  value: sample-project-template.sln
 
 - name: webAppProjectName
   value: sample
