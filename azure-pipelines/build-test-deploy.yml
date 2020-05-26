@@ -16,8 +16,9 @@ parameters:
   type: boolean
   default: false
 - name: resourceGroupNameBase
-  displayName: Resource Group base name to use if deploying
+  displayName: Resource Group base name to use if deploying ('useDefault' pulls from config)
   type: string
+  default: useDefault
 - name: environmentSuffix
   displayName: Environment
   type: string

@@ -36,8 +36,14 @@ variables:
   value: $[variables['azureSubscriptionServiceConnectionNameFromAdoPipelineSettings']]
 
 # Use the resource group name base supplied if triggered manually,
-# otherwise fallback to configuration from portal variables
+# otherwise fallback to configuration from portal variables.
+# '' is not a valid option on the parameters so 'useDefault' will
+# signal to use the value from configuration
 - name: resourceGroupNameFromParameterOrSettings
-  value: $[coalesce('${{ parameters.resourceGroupNameBase }}', variables['resourceGroupNameBaseFromAdoPipelineSettings'])]
+  ${{ if eq(parameters.resourceGroupNameBase, 'useDefault') }}:
+    value: $[variables['azureSubscriptionServiceConnectionNameFromAdoPipelineSettings']]
+  ${{ if ne(parameters.resourceGroupNameBase, 'useDefault') }}:
+    value: ${{ parameters.resourceGroupNameBase }}
+
 - name: resourceGroupName
   value: $(resourceGroupNameFromParameterOrSettings)-${{ parameters.environmentSuffix }}
