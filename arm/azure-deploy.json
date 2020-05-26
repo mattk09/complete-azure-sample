@@ -9,6 +9,20 @@
     "location": {
       "type": "string",
       "defaultValue": "[resourceGroup().location]"
+    },
+    "additionalSecrets": {
+      "type": "secureObject",
+      "metadata": {
+        "description": "Additional secrets to inject into the keyVault"
+      },
+      "defaultValue": {
+        "items": [
+          {
+            "name": "example-secret-name",
+            "secret": "example-secret-value"
+          }
+        ]
+      }
     }
   },
   "variables": {
@@ -151,6 +165,21 @@
       "dependsOn": [
         "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]",
         "[resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName'))]"
+      ]
+    },
+    {
+      "type": "Microsoft.KeyVault/vaults/secrets",
+      "name": "[concat(variables('keyVaultName'), '/', parameters('additionalSecrets').items[copyIndex()].name)]",
+      "apiVersion": "2016-10-01",
+      "copy": {
+        "name": "secretsCopy",
+        "count": "[length(parameters('additionalSecrets').items)]"
+      },
+      "properties": {
+        "value": "[parameters('additionalSecrets').items[copyIndex()].secret]"
+      },
+      "dependsOn": [
+        "[concat('Microsoft.KeyVault/vaults/', variables('keyVaultName'))]"
       ]
     }
   ],
