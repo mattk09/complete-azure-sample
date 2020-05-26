@@ -20,6 +20,17 @@ variables:
 - name: location
   value: westus
 
+# Inject additional secrets that are external and not created during the arm deployment process
+# Do not hardcode real secrets into the yaml, you can use varaibles[] configured from the portal
+- name: additionalKeyVaultSecrets
+  value: >-
+    {
+      "items": [
+        {"name": "AAD--ClientSecret", "secret": "SecretFromVariableGroupOrPipelineVariables" },
+        {"name": "Sample--InjectedSecret", "secret": "sample-value" }
+      ]
+    }
+
 # Configure here, in a group, or portal variables
 - name: azureSubscriptionServiceConnectionName
   value: $[variables['azureSubscriptionServiceConnectionNameFromAdoPipelineSettings']]

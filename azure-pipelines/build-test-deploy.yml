@@ -137,6 +137,7 @@ stages:
               deploymentOutputs: ArmDeploymentOutput
               overrideParameters: >-
                 -name $(armTemplateNameParameter)
+                -additionalSecrets $(additionalKeyVaultSecrets)
           - pwsh: |
               $output = ConvertFrom-Json '$(ArmDeploymentOutput)' -Depth 10
 
