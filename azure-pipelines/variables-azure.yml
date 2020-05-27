@@ -41,7 +41,7 @@ variables:
 # signal to use the value from configuration
 - name: resourceGroupNameFromParameterOrSettings
   ${{ if eq(parameters.resourceGroupNameBase, 'useDefault') }}:
-    value: $[variables['azureSubscriptionServiceConnectionNameFromAdoPipelineSettings']]
+    value: $[variables['resourceGroupNameBaseFromAdoPipelineSettings']]
   ${{ if ne(parameters.resourceGroupNameBase, 'useDefault') }}:
     value: ${{ parameters.resourceGroupNameBase }}
 
