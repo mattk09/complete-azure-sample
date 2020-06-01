@@ -1,4 +1,5 @@
 ﻿using System.Linq;
+using Microsoft.ApplicationInsights.Extensibility.Implementation;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -7,6 +8,7 @@ using Microsoft.Extensions.Hosting;
 using NSwag;
 using NSwag.Generation.Processors.Security;
 using Sample.Core;
+using Sample.Core.Storage;
 using Sample.Extensions;
 using Sample.Extensions.Configurations;
 using Sample.Extensions.Interfaces;
@@ -30,6 +32,7 @@ namespace Sample
             services.AddApplicationInsightsTelemetry(this.Configuration);
 
             services.AddSingleton<IWeatherForecaster, WeatherForecaster>();
+            services.AddSingleton<ISampleStorage, MemoryStorage>();
 
             services.AddControllers();
 
@@ -64,6 +67,11 @@ namespace Sample
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
+                TelemetryDebugWriter.IsTracingDisabled = true;
+            }
+            else
+            {
+                app.UseHttpsRedirection();
             }
 
             // Use middleware to route / to swagger
@@ -77,8 +85,6 @@ namespace Sample
 
                 await nextAsync();
             });
-
-            app.UseHttpsRedirection();
 
             app.UseRouting();
             app.UseAuthentication();
