@@ -98,11 +98,11 @@ stages:
         contents: '*'
         targetFolder: $(Build.ArtifactStagingDirectory)/arm
 
-    - task: PublishBuildArtifacts@1
-      displayName: Publish Build Artifacts
+    - task: PublishPipelineArtifact@1 # Microsoft recommends this over PublishBuildArtifacts
+      displayName: Publish Pipeline Artifacts
       condition: and(succeeded(), eq(variables['shouldDeploy'], 'True'))
       inputs:
-        pathtoPublish: $(Build.ArtifactStagingDirectory)
+        targetPath: $(Build.ArtifactStagingDirectory)
         artifactName: $(artifactName)
 
     - script: |
