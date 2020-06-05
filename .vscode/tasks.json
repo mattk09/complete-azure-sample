@@ -22,11 +22,13 @@
                 "${workspaceFolder}"
             ],
             "group": {
-                "kind": "test",
+                "kind": "build",
                 "isDefault": true
             },
             "problemMatcher": "$msCompile",
-            "dependsOn": ["build"]
+            "dependsOn": [
+                "build"
+            ]
         }
     ]
 }

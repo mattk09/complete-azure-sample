@@ -5,12 +5,14 @@ using System.IO;
 using System.Threading.Tasks;
 using Microsoft.IO;
 
+using Sample.Core.Storage;
+
 namespace Sample.Core.Storage
 {
     public class MemoryStorage : ISampleStorage
     {
         private readonly RecyclableMemoryStreamManager manager = new RecyclableMemoryStreamManager();
-        private readonly ConcurrentDictionary<string, Memory<byte>> storage = new ConcurrentDictionary<string, Memory<byte>>();
+        private readonly ConcurrentDictionary<string, byte[]> storage = new ConcurrentDictionary<string, byte[]>();
 
         public async IAsyncEnumerable<string> GetKeysAsync()
         {
@@ -33,13 +35,10 @@ namespace Sample.Core.Storage
 
             await value.CopyToAsync(copyStream);
 
-            var byteBuffer = copyStream.GetBuffer();
-            Memory<byte> memory = new Memory<byte>(byteBuffer, 0, (int)copyStream.Length);
-
-            copyStream.Seek(0, SeekOrigin.Begin);
+            var byteBuffer = copyStream.ToArray();
 
             // Each create will make a new buffer
-            this.storage.AddOrUpdate(key, memory, (k, v) => memory);
+            this.storage.AddOrUpdate(key, byteBuffer, (k, v) => byteBuffer);
         }
 
         public Task<Stream> GetAsync(string key)
@@ -47,7 +46,7 @@ namespace Sample.Core.Storage
             if (this.storage.TryGetValue(key, out var byteBuffer))
             {
                 // This will copy from the buffer to recycled buffers
-                MemoryStream copyStream = this.manager.GetStream(byteBuffer);
+                var copyStream = this.manager.GetStream(byteBuffer);
 
                 return Task.FromResult<Stream>(copyStream);
             }
@@ -57,7 +56,7 @@ namespace Sample.Core.Storage
 
         public Task RemoveAsync(string key)
         {
-            this.storage.TryRemove(key, out var stream);
+            this.storage.TryRemove(key, out _);
 
             return Task.CompletedTask;
         }
