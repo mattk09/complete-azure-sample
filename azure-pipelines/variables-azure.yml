@@ -11,11 +11,6 @@ parameters:
   type: string
 
 variables:
-- name: armTemplateNameParameter
-  value: ${{ parameters.baseName }}-${{ parameters.environmentSuffix }}
-
-- name: environmentName
-  value: ${{ parameters.baseName }}-${{ parameters.environmentSuffix }}
 
 - name: location
   value: westus
@@ -46,4 +41,25 @@ variables:
     value: ${{ parameters.resourceGroupNameBase }}
 
 - name: resourceGroupName
-  value: $(resourceGroupNameFromParameterOrSettings)-${{ parameters.environmentSuffix }}
+  value: $(resourceGroupNameFromParameterOrSettings)-$(location)-${{ parameters.environmentSuffix }}
+
+- name: syntheticBaseName
+  value: $(resourceGroupName)
+
+- name: syntheticBaseNameWithoutEnvironmentSuffix
+  value: $(resourceGroupNameFromParameterOrSettings)-$(location)
+
+- name: baseName
+  value: >-
+    $[coalesce(
+      '${{ parameters.baseName }}',
+      variables['syntheticBaseName'])]
+
+- name: armTemplateNameParameter
+  value: $(baseName)
+
+- name: environmentName
+  value: >-
+    $[format('{0}-{1}',
+      coalesce('${{ parameters.baseName }}', variables['syntheticBaseNameWithoutEnvironmentSuffix']),
+      '${{ parameters.environmentSuffix }}')]
