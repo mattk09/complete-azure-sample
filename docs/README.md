@@ -22,7 +22,7 @@ Depending on your project needs, you may not need all components or pieces inclu
   - [Swashbuckle][swagger-swashbuckle] is another alternative
   - Navigate to `/swagger` endpoint to view
 
-Wishlist:
+Pending Work:
 
 - Less contrived project sample (currently fake weather forecast)
 - Dependency Injection samples

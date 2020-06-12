@@ -4,7 +4,7 @@ trigger:
       - '*'
   paths:
     include:
-      - '**/*.md'
+      - docs/*
 
 pool:
   vmImage: ubuntu-latest
@@ -13,7 +13,7 @@ pool:
 jobs:
 - job: DocumentsLint
   steps:
-  - task: NodeTool@0 
+  - task: NodeTool@0
     displayName: Install node
     inputs:
       versionSpec: 10.x
@@ -21,10 +21,10 @@ jobs:
   - script: npm install -g cspell markdownlint-cli
     displayName: Install CSpell and Markdown lint
 
-  - script: cspell "**/*.md"  --config $(Build.SourcesDirectory)/azure-pipelines/cspell/cspell.json
+  - script: cspell "docs/**/*.md"  --config $(Build.SourcesDirectory)/azure-pipelines/cspell/cspell.json
     displayName: Run CSpell
 
   - script: |
       set -e
-      markdownlint "**/*.md" --config $(Build.SourcesDirectory)/azure-pipelines/mdlint/mdlint.json
-    displayName: Run Markdown Lint 
+      markdownlint "docs/**/*.md" --config $(Build.SourcesDirectory)/azure-pipelines/mdlint/mdlint.json
+    displayName: Run Markdown Lint
