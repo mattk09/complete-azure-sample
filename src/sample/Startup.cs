@@ -1,4 +1,5 @@
-﻿using System.Linq;
+using System;
+using System.Linq;
 using Microsoft.ApplicationInsights.Extensibility.Implementation;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -12,6 +13,7 @@ using Sample.Core.Storage;
 using Sample.Extensions;
 using Sample.Extensions.Configurations;
 using Sample.Extensions.Interfaces;
+using Sample.Settings;
 
 namespace Sample
 {
@@ -27,12 +29,24 @@ namespace Sample
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            // Read 'SampleSettings'
+            var settings = new SampleSettings();
+            this.Configuration.Bind(settings);
+
             // By default this will look for 'ApplicationInsights:InstrumentationKey' in the configuration.
             // This is added automatically by our 'AddAzureKeyVault' call in Program.cs
             services.AddApplicationInsightsTelemetry(this.Configuration);
 
             services.AddSingleton<IWeatherForecaster, WeatherForecaster>();
-            services.AddSingleton<ISampleStorage, MemoryStorage>();
+
+            if (settings.Features.UseStorageSimulator)
+            {
+                services.AddSingleton<ISampleStorage, MemoryStorage>();
+            }
+            else
+            {
+                throw new InvalidOperationException("No real storage options available yet");
+            }
 
             services.AddControllers();
 
