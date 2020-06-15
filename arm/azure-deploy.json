@@ -37,6 +37,7 @@
     "webAppName": "[parameters('name')]",
     "storageAccountName": "[toLower(take(replace(replace(parameters('name'), '-', ''), '_', ''), 24))]",
     "storageAccountSku": "Standard_LRS",
+    "storageAccountApiVersion": "2018-07-01",
     "appInsightsName": "[parameters('name')]",
     "keyVaultName": "[toLower(take(replace(replace(parameters('name'), '-', ''), '_', ''), 24))]",
     "keyVaultSku": {
@@ -92,7 +93,7 @@
     {
       "type": "Microsoft.Storage/storageAccounts",
       "name": "[variables('storageAccountName')]",
-      "apiVersion": "2018-02-01",
+      "apiVersion": "[variables('storageAccountApiVersion')]",
       "kind": "StorageV2",
       "location": "[parameters('location')]",
       "sku": {
@@ -152,12 +153,12 @@
       ]
     },
     {
-      "name": "[concat(variables('keyVaultName'), '/StorageAccount--Key')]",
+      "name": "[concat(variables('keyVaultName'), '/AzureStorageSettings--ConnectionString')]",
       "type": "Microsoft.KeyVault/vaults/secrets",
       "apiVersion": "2016-10-01",
       "location": "[parameters('location')]",
       "properties": {
-        "value": "[listKeys(resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName')),'2018-07-01').keys[0].value]",
+        "value": "[concat('DefaultEndpointsProtocol=https;AccountName=', variables('storageAccountName'), ';AccountKey=', listKeys(resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName')), variables('storageAccountApiVersion')).keys[0].value)]",
         "attributes": {
           "enabled": true
         }

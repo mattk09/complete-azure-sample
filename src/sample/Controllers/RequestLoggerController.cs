@@ -12,12 +12,10 @@ namespace Sample.Controllers
     [Route("requests")]
     public class RequestLoggerController : ControllerBase
     {
-        private readonly ILogger<RequestLoggerController> logger;
         private readonly ISampleStorage storage;
 
-        public RequestLoggerController(ILogger<RequestLoggerController> logger, ISampleStorage storage)
+        public RequestLoggerController(ISampleStorage storage)
         {
-            this.logger = logger;
             this.storage = storage;
         }
 
@@ -27,35 +25,48 @@ namespace Sample.Controllers
             return this.storage.GetKeysAsync();
         }
 
-        [HttpGet]
-        public async Task<Stream> GetAsync([FromQuery] string key)
+        [HttpGet("{**relativePathWithoutQuery}")]
+        public async Task<ActionResult<Stream>> GetAsync(string relativePathWithoutQuery)
         {
-            var stream = await this.storage.GetAsync(key);
+            if (string.IsNullOrWhiteSpace(relativePathWithoutQuery))
+            {
+                return this.BadRequest();
+            }
 
-            return stream;
+            try
+            {
+                return await this.storage.GetAsync(relativePathWithoutQuery);
+            }
+            catch (KeyNotFoundException)
+            {
+                return this.NotFound();
+            }
         }
 
-        [HttpPost("{basePath}/{*relativePathWithoutQuery}")]
-        public async Task<IActionResult> PostAsync(string basePath, string relativePathWithoutQuery)
+        [HttpDelete]
+        public async Task<ActionResult> DeleteAsync([FromQuery] string key)
         {
-            using var scope = this.logger.BeginScope(new Dictionary<string, object> { { "FullPath", $"{basePath}/{relativePathWithoutQuery}" } });
+            if (string.IsNullOrWhiteSpace(key))
+            {
+                return this.BadRequest();
+            }
 
-            var context = this.Request.HttpContext;
+            await this.storage.RemoveAsync(key);
 
-            // Log to storage
-            await this.storage.CreateAsync(
-                $"{basePath}/{relativePathWithoutQuery}",
-                context.Request.Body);
+            return this.Ok();
+        }
 
-            // Log to loggers
-            this.logger.LogInformation($"Http Request Information: " +
-                $"Method: {context.Request.Method} " +
-                $"Schema: {context.Request.Scheme} " +
-                $"Host: {context.Request.Host} " +
-                $"Path: {context.Request.Path} " +
-                $"QueryString: {context.Request.QueryString}");
+        [HttpPost("{**relativePathWithoutQuery}")]
+        public async Task<IActionResult> PostAsync(string relativePathWithoutQuery)
+        {
+            if (string.IsNullOrWhiteSpace(relativePathWithoutQuery))
+            {
+                return this.BadRequest();
+            }
 
-            return Ok();
+            await this.storage.CreateAsync(relativePathWithoutQuery, this.HttpContext.Request.Body);
+
+            return this.Ok();
         }
     }
 }

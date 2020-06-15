@@ -5,8 +5,6 @@ using System.IO;
 using System.Threading.Tasks;
 using Microsoft.IO;
 
-using Sample.Core.Storage;
-
 namespace Sample.Core.Storage
 {
     public class MemoryStorage : ISampleStorage
@@ -51,7 +49,7 @@ namespace Sample.Core.Storage
                 return Task.FromResult<Stream>(copyStream);
             }
 
-            throw new InvalidOperationException($"{key} not found");
+            throw new KeyNotFoundException(key);
         }
 
         public Task RemoveAsync(string key)

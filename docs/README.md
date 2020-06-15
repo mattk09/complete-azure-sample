@@ -25,17 +25,22 @@ Depending on your project needs, you may not need all components or pieces inclu
 
 Pending Work:
 
-- Less contrived project sample (currently fake weather forecast)
 - Dependency Injection samples
 - Logging examples
 - Authorization
-- Simulators for services (storage, auth)
+- Simulators for services (auth)
 - Health probes
 - Extended ApplicationInsights alerts/monitoring/dashboard examples
 - WebApp Deployment Slots
 - Best practices for managing KeyVault contents (How do we add external secrets not coming from ARM)
 
 ## Feature Details
+
+### Storage
+
+This project should automatically fetch the Azure Storage Account connection string from Key Vault.  The `RequestLoggerController` is very simple example of to read/write/delete from that storage.  Local development can enable the simulator from configuration to use an in-memory table for testing.  Just set "Features:UseStorageSimulator" to `true`.
+
+[Storage Explorer][storage-explorer] is a great cross-platfrom ultily to help interact with storage accounts during development.
 
 ### Configuration
 
@@ -62,3 +67,4 @@ It is not always easy to see in the code, but this project gains a lot from usin
 
 [swagger-nswag]: https://docs.microsoft.com/en-us/aspnet/core/tutorials/getting-started-with-nswag?view=aspnetcore-3.1&tabs=visual-studio
 [swagger-swashbucke]: https://docs.microsoft.com/en-us/aspnet/core/tutorials/getting-started-with-swashbuckle?view=aspnetcore-3.1&tabs=visual-studio
+[storage-explorer]: https://azure.microsoft.com/en-us/features/storage-explorer/
