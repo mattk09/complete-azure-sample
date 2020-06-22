@@ -12,17 +12,17 @@ namespace Sample.Controllers
     [Route("requests")]
     public class RequestLoggerController : ControllerBase
     {
-        private readonly ISampleStorage storage;
+        private readonly IStorage storage;
 
-        public RequestLoggerController(ISampleStorage storage)
+        public RequestLoggerController(IStorage storage)
         {
             this.storage = storage;
         }
 
         [HttpGet("keys")]
-        public IAsyncEnumerable<string> GetKeysAsync()
+        public IAsyncEnumerable<string> GetIdentifiersAsync()
         {
-            return this.storage.GetKeysAsync();
+            return this.storage.GetIdentifiersAsync();
         }
 
         [HttpGet("{**relativePathWithoutQuery}")]

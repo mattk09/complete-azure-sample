@@ -7,12 +7,12 @@ using Microsoft.IO;
 
 namespace Sample.Core.Storage
 {
-    public class MemoryStorage : ISampleStorage
+    public class MemoryStorage : IStorage
     {
         private readonly RecyclableMemoryStreamManager manager = new RecyclableMemoryStreamManager();
         private readonly ConcurrentDictionary<string, byte[]> storage = new ConcurrentDictionary<string, byte[]>();
 
-        public async IAsyncEnumerable<string> GetKeysAsync()
+        public async IAsyncEnumerable<string> GetIdentifiersAsync()
         {
             foreach (var key in this.storage.Keys)
             {

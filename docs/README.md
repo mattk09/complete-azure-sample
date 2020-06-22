@@ -40,7 +40,7 @@ Pending Work:
 
 This project should automatically fetch the Azure Storage Account connection string from Key Vault.  The `RequestLoggerController` is very simple example of to read/write/delete from that storage.  Local development can enable the simulator from configuration to use an in-memory table for testing.  Just set "Features:UseStorageSimulator" to `true`.
 
-[Storage Explorer][storage-explorer] is a great cross-platfrom ultily to help interact with storage accounts during development.
+[Storage Explorer][storage-explorer] is a great cross-platform utility to help interact with storage accounts during development.
 
 ### Configuration
 

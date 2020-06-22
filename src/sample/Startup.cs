@@ -14,8 +14,6 @@ using Sample.Extensions;
 using Sample.Extensions.Configurations;
 using Sample.Extensions.Interfaces;
 using Sample.Settings;
-using Sample.Storage;
-using Sample.Storage.Settings;
 
 namespace Sample
 {
@@ -42,7 +40,7 @@ namespace Sample
             services.AddSingleton<IWeatherForecaster, WeatherForecaster>();
 
             // Add the the proper ISampleStorage and related services based on configuration
-            AddStorageFromConfiguration(services, settings);
+            services.AddSampleStorage(settings);
 
             services.AddControllers();
 
@@ -77,7 +75,6 @@ namespace Sample
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
-                TelemetryDebugWriter.IsTracingDisabled = true;
             }
             else
             {
@@ -108,24 +105,6 @@ namespace Sample
             {
                 endpoints.MapControllers();
             });
-        }
-
-        private static void AddStorageFromConfiguration(IServiceCollection services, SampleSettings settings)
-        {
-            if (settings.Features.UseStorageSimulator)
-            {
-                services.AddSingleton<ISampleStorage, MemoryStorage>();
-            }
-            else
-            {
-                services.Configure<AzureStorageSettings>(a =>
-                {
-                    a.ConnectionString = settings.AzureStorageSettings.ConnectionString;
-                    a.ContainerName = settings.AzureStorageSettings.ContainerName;
-                });
-
-                services.AddSingleton<ISampleStorage, AzureBlobStorage>();
-            }
         }
     }
 }

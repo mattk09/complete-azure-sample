@@ -4,9 +4,9 @@ using System.Threading.Tasks;
 
 namespace Sample.Core.Storage
 {
-    public interface ISampleStorage
+    public interface IStorage
     {
-        IAsyncEnumerable<string> GetKeysAsync();
+        IAsyncEnumerable<string> GetIdentifiersAsync();
 
         Task CreateAsync(string key, Stream value);
 

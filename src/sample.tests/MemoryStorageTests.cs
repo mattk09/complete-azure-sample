@@ -11,7 +11,7 @@ namespace Sample.Tests
 {
     public class MemoryStorageTests
     {
-        private readonly ISampleStorage storage = new MemoryStorage();
+        private readonly IStorage storage = new MemoryStorage();
 
         [Fact]
         public async Task TestKeysAsync()
@@ -23,7 +23,7 @@ namespace Sample.Tests
                 await AddRandomDataToStorageAsync(this.storage, $"key:{i}");
             }
 
-            var keys = await storage.GetKeysAsync().ToListAsync();
+            var keys = await storage.GetIdentifiersAsync().ToListAsync();
 
             var allKeys = string.Join(",", keys);
 
@@ -56,7 +56,7 @@ namespace Sample.Tests
                 validationDictionary.Remove(key);
             }
 
-            var keys = await storage.GetKeysAsync().ToListAsync();
+            var keys = await storage.GetIdentifiersAsync().ToListAsync();
             Assert.Equal(ValueCount, keys.Count);
         }
 
@@ -66,14 +66,14 @@ namespace Sample.Tests
             var key = "testkey";
 
             var byteBuffer1 = await AddRandomDataToStorageAsync(this.storage, key);
-            var keys1 = await storage.GetKeysAsync().ToListAsync();
+            var keys1 = await storage.GetIdentifiersAsync().ToListAsync();
             Assert.Single(keys1);
 
             var storedByteBuffer1 = await StreamToBytesAsync(await storage.GetAsync(key));
             Assert.True(byteBuffer1.SequenceEqual(storedByteBuffer1));
 
             var byteBuffer2 = await AddRandomDataToStorageAsync(this.storage, key);
-            var keys2 = await storage.GetKeysAsync().ToListAsync();
+            var keys2 = await storage.GetIdentifiersAsync().ToListAsync();
             Assert.Single(keys2);
 
             var storedByteBuffer2 = await StreamToBytesAsync(await storage.GetAsync(key));
@@ -88,7 +88,7 @@ namespace Sample.Tests
             var key = "testkey";
 
             var byteBuffer1 = await AddRandomDataToStorageAsync(this.storage, key);
-            var keys1 = await storage.GetKeysAsync().ToListAsync();
+            var keys1 = await storage.GetIdentifiersAsync().ToListAsync();
             Assert.Single(keys1);
 
             var storedByteBuffer1 = await StreamToBytesAsync(await storage.GetAsync(key));
@@ -96,11 +96,11 @@ namespace Sample.Tests
 
             await storage.RemoveAsync(key);
 
-            var keys2 = await storage.GetKeysAsync().ToListAsync();
+            var keys2 = await storage.GetIdentifiersAsync().ToListAsync();
             Assert.Empty(keys2);
         }
 
-        private static async Task<byte[]> AddRandomDataToStorageAsync(ISampleStorage storage, string key, int dataSize = 100)
+        private static async Task<byte[]> AddRandomDataToStorageAsync(IStorage storage, string key, int dataSize = 100)
         {
             var bytes = new byte[dataSize];
             new Random().NextBytes(bytes);
