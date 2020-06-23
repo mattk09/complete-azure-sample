@@ -9,9 +9,14 @@ using Xunit;
 
 namespace Sample.Tests
 {
-    public class MemoryStorageTests
+    public class StorageTests : IClassFixture<StorageProvider>
     {
-        private readonly IStorage storage = new MemoryStorage();
+        private readonly IStorage storage;
+
+        public StorageTests(StorageProvider storageProvider)
+        {
+            this.storage = storageProvider?.Storage;
+        }
 
         [Fact]
         public async Task TestKeysAsync()
