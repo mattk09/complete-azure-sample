@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -8,7 +8,7 @@ namespace Sample.Core
 {
     public class WeatherForecaster : IWeatherForecaster
     {
-        private static readonly string[] Summaries = new[]
+        private static readonly string[] summaries = new[]
         {
             "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching",
         };
@@ -23,7 +23,7 @@ namespace Sample.Core
                     {
                         Date = DateTime.Now.AddDays(index),
                         TemperatureC = random.Next(-20, 55),
-                        Summary = Summaries[random.Next(Summaries.Length)],
+                        Summary = summaries[random.Next(summaries.Length)],
                     });
 
             return Task.FromResult(forecast);

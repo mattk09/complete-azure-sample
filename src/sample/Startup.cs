@@ -1,12 +1,15 @@
-using Microsoft.ApplicationInsights.Extensibility;
+﻿using System.Linq;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
-
+using NSwag;
+using NSwag.Generation.Processors.Security;
 using Sample.Core;
+using Sample.Extensions;
+using Sample.Extensions.Configurations;
+using Sample.Extensions.Interfaces;
 
 namespace Sample
 {
@@ -30,8 +33,29 @@ namespace Sample
 
             services.AddControllers();
 
+            var authConfig = Configuration.GetSection("Authentication")
+                .Get<AuthenticationConfiguration>();
+
+            services.AddSingleton<IAuthenticationConfiguration>(authConfig);
+            services.AddAzureAdAuthentication(authConfig);
+
             // Register the Swagger services
-            services.AddSwaggerDocument();
+            services.AddOpenApiDocument(configure =>
+            {
+                configure.Title = "Sample API";
+                if (authConfig.Enabled)
+                {
+                    configure.AddSecurity("JWT", Enumerable.Empty<string>(), new OpenApiSecurityScheme
+                    {
+                        Type = OpenApiSecuritySchemeType.ApiKey,
+                        Name = "Authorization",
+                        In = OpenApiSecurityApiKeyLocation.Header,
+                        Description = "Paste at the textbox bellow: Bearer {your JWT id_token}.",
+                    });
+
+                    configure.OperationProcessors.Add(new AspNetCoreOperationSecurityScopeProcessor("JWT"));
+                }
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -57,7 +81,7 @@ namespace Sample
             app.UseHttpsRedirection();
 
             app.UseRouting();
-
+            app.UseAuthentication();
             app.UseAuthorization();
 
             // Register the Swagger generator and the Swagger UI middlewares

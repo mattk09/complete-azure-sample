@@ -7,6 +7,7 @@ Depending on your project needs, you may not need all components or pieces inclu
 ## Project Features
 
 - ASP.NET Core 3.1 WebApi
+  - [Authentication with Azure Active Directory](./Authentication.md)
 - CI/CD (all yaml/stages)
   - Build
   - Analyzers

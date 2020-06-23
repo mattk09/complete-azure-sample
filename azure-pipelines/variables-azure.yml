@@ -1,6 +1,10 @@
 
 # Use parameters if you want them to influence the general variables
 parameters:
+- name: enableAuthentication
+  type: boolean
+  default: false
+
 - name: resourceGroupNameBase
   type: string
 
@@ -15,16 +19,32 @@ variables:
 - name: location
   value: westus
 
+- name: enableAuthentication
+  value: ${{ parameters.enableAuthentication }}
+
 # Inject additional secrets that are external and not created during the arm deployment process
-# Do not hardcode real secrets into the yaml, you can use varaibles[] configured from the portal
+# Do not hardcode real secrets into the yaml, you can use variables[] configured from the portal
 - name: additionalKeyVaultSecrets
-  value: >-
-    {
-      "items": [
-        {"name": "AAD--ClientSecret", "secret": "SecretFromVariableGroupOrPipelineVariables" },
-        {"name": "Sample--InjectedSecret", "secret": "sample-value" }
-      ]
-    }
+  ${{ if parameters.enableAuthentication }}:
+    value: >-
+      {
+        "items": [
+          {"name": "Authentication--Enabled", "secret": "$(enableAuthentication)" },
+          {"name": "Authentication--ActiveDirectory--TenantId", "secret": "$(ServerTenantId)" },
+          {"name": "Authentication--ActiveDirectory--Domain", "secret": "$(ServerDomain)" },
+          {"name": "Authentication--ActiveDirectory--ClientId", "secret": "$(ServerClientId)" },
+          {"name": "Authentication--ActiveDirectory--Authority", "secret": "$(Authority)" },
+          {"name": "Authentication--ActiveDirectory--ReplyUri", "secret": "https://$(environmentName).azurewebsites.net/login" },
+          {"name": "Authentication--ActiveDirectory--AccessTokenVersion", "secret": "2" }
+        ]
+      }
+  ${{ if eq(parameters.enableAuthentication, False) }}:
+    value: >-
+      {
+        "items": [
+          {"name": "Authentication--Enabled", "secret": "$(enableAuthentication)" }
+        ]
+      }
 
 # Configure here, in a group, or portal variables
 - name: azureSubscriptionServiceConnectionName

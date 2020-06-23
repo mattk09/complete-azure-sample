@@ -27,6 +27,10 @@ parameters:
   - dev
   - qa
   - prod
+- name: enableAuthentication
+  displayName: Configure the application to use Azure AD for Authentication?
+  type: boolean
+  default: false
 
 variables:
 - template: variables.yml # Generic and/or generated variables
@@ -35,9 +39,12 @@ variables:
     resourceGroupNameBase: ${{ parameters.resourceGroupNameBase }}
     baseName: # Leave empty to build name based on resource group and location
     environmentSuffix: ${{ parameters.environmentSuffix }}
+    enableAuthentication: ${{ parameters.enableAuthentication }}
 # Include a group if you prefer that over yaml for things like secrets and service connection names
 # Hardcoding or specifying as a parameter both work
 #- group: groupName | ${{ parameters.variableGroupName }}
+- ${{ if parameters.enableAuthentication }}:
+  - group: sample-template-authentication
 - name: shouldDeploy # Only run deployment when merging to master unless specifically configured during manual run
   value: >-
     $[or(
