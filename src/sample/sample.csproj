@@ -25,6 +25,7 @@
     <ProjectReference Include="..\sample.core\sample.core.csproj" />
     <ProjectReference Include="..\sample.extensions\sample.extensions.csproj" />
     <ProjectReference Include="..\sample.storage\sample.storage.csproj" />
+    <ProjectReference Include="..\sample.contracts\sample.contracts.csproj" />
   </ItemGroup>
 
 </Project>

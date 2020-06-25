@@ -290,6 +290,12 @@ dotnet_diagnostic.SA1629.severity = none
 # SA1311: Static readonly fields should begin with upper-case letter
 dotnet_diagnostic.SA1311.severity = none
 
+# CA1062: In externally visible method validate parameters for null
+# Below is currently not working. https://github.com/dotnet/roslyn-analyzers/issues/3451
+# Remove the next line when fixed
+dotnet_diagnostic.CA1062.severity = none
+dotnet_code_quality.CA1062.null_check_validation_methods = ThrowIfNull|ThrowIfNullOrEmpty
+
 [src/CodeStyle/**.{cs,vb}]
 # warning RS0005: Do not use generic CodeAction.Create to create CodeAction
 dotnet_diagnostic.RS0005.severity = none

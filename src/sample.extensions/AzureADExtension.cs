@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.Extensions.DependencyInjection;
+using Sample.Exceptions;
 using Sample.Extensions.Interfaces;
 
 namespace Sample.Extensions
@@ -14,20 +15,14 @@ namespace Sample.Extensions
     {
         public static IServiceCollection AddAzureAdAuthentication(this IServiceCollection services, IAuthenticationConfiguration authConfig)
         {
-            if (authConfig == null)
-            {
-                throw new ArgumentNullException(nameof(authConfig));
-            }
+            Guard.ThrowIfNull(authConfig, nameof(authConfig));
 
             if (!authConfig.Enabled)
             {
                 return services;
             }
 
-            if (authConfig.ActiveDirectory == null)
-            {
-                throw new ArgumentNullException($"{nameof(authConfig)}.ActiveDirectory");
-            }
+            Guard.ThrowIfNull(authConfig.ActiveDirectory, nameof(authConfig.ActiveDirectory));
 
             services.AddAuthentication(AzureADDefaults.JwtBearerAuthenticationScheme)
                .AddAzureADBearer(options => authConfig.UpdateAzureAdOptions(options));

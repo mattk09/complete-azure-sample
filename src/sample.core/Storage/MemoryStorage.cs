@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 using Microsoft.IO;
+using Sample.Exceptions;
 
 namespace Sample.Core.Storage
 {
@@ -24,10 +25,7 @@ namespace Sample.Core.Storage
 
         public async Task CreateAsync(string key, Stream value)
         {
-            if (value == null)
-            {
-                throw new ArgumentNullException(nameof(value));
-            }
+            Guard.ThrowIfNull(value, nameof(value));
 
             using var copyStream = new MemoryStream();
 

@@ -1,6 +1,7 @@
 using System;
 using Microsoft.Extensions.DependencyInjection;
 using Sample.Core.Storage;
+using Sample.Exceptions;
 using Sample.Settings;
 using Sample.Storage;
 using Sample.Storage.Settings;
@@ -11,10 +12,7 @@ namespace Sample.Extensions
     {
         public static void AddSampleStorage(this IServiceCollection services, SampleSettings settings)
         {
-            if (settings == null)
-            {
-                throw new ArgumentNullException(nameof(settings));
-            }
+            Guard.ThrowIfNull(settings, nameof(settings));
 
             if (settings.Features.UseStorageSimulator)
             {

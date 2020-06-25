@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 using Azure.Storage.Blobs;
-
 using Sample.Core.Storage;
+using Sample.Exceptions;
 using Sample.Storage.Settings;
 
 namespace Sample.Storage
@@ -20,12 +20,7 @@ namespace Sample.Storage
 
         public AzureBlobStorage(AzureStorageSettings settings)
         {
-            if (settings == null)
-            {
-                throw new ArgumentNullException(nameof(settings));
-            }
-
-            this.settings = settings;
+            this.settings = Guard.ThrowIfNull(settings, nameof(settings));
 
             this.blobContainerClient = new BlobContainerClient(this.settings.ConnectionString, this.settings.ContainerName);
         }

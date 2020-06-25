@@ -22,5 +22,9 @@
     <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="3.1.4" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="3.1.4" />
   </ItemGroup>
+  
+  <ItemGroup>
+    <ProjectReference Include="..\sample.contracts\sample.contracts.csproj" />
+  </ItemGroup>
 
 </Project>

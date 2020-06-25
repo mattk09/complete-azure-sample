@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Sample.Exceptions;
 using Sample.Extensions.Interfaces;
 using Sample.Extensions.Models;
 
@@ -24,12 +25,8 @@ namespace Sample.Controllers
 
         public AuthenticationController(IAuthenticationConfiguration authenticationConfiguration)
         {
-            if (authenticationConfiguration == null)
-            {
-                throw new ArgumentNullException(nameof(authenticationConfiguration));
-            }
+            this.authenticationConfiguration = Guard.ThrowIfNull(authenticationConfiguration, nameof(authenticationConfiguration));
 
-            this.authenticationConfiguration = authenticationConfiguration;
             state = "12345";
             nonce = "6789";
         }
@@ -86,7 +83,7 @@ namespace Sample.Controllers
             if (!token.GetValue(StateField).Equals(state, StringComparison.OrdinalIgnoreCase))
             {
                 result = BadRequest(StateFieldDoesntMatch);
-            }            
+            }
 
             return result;
         }

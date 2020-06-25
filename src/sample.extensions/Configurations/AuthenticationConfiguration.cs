@@ -1,5 +1,6 @@
 ﻿using System;
 using Microsoft.AspNetCore.Authentication.AzureAD.UI;
+using Sample.Exceptions;
 using Sample.Extensions.Interfaces;
 
 namespace Sample.Extensions.Configurations
@@ -20,10 +21,7 @@ namespace Sample.Extensions.Configurations
 
         public void UpdateAzureAdOptions(AzureADOptions options)
         {
-            if (options == null)
-            {
-                throw new ArgumentNullException(nameof(options));
-            }
+            Guard.ThrowIfNull(options, nameof(options));
 
             options.Instance = AzureAdEndpoint;
             options.Domain = ActiveDirectory.Domain;
@@ -33,7 +31,7 @@ namespace Sample.Extensions.Configurations
 
         public Uri GetAuthorizationUri(string state, string nonce)
         {
-            // In this sample we are using OpenId Connect https://docs.microsoft.com/en-us/azure/active-directory/develop/v2-protocols-oidc 
+            // In this sample we are using OpenId Connect https://docs.microsoft.com/en-us/azure/active-directory/develop/v2-protocols-oidc
             // State and Nonce can be used to validate the login response and the id_token, respectively.
             // To understand the behavior of each parameters check. https://docs.microsoft.com/en-us/azure/active-directory/develop/v2-protocols-oidc#send-the-sign-in-request
             return new Uri($"{AzureAdEndpoint}" +
