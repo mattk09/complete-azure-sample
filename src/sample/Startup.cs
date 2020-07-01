@@ -6,10 +6,11 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using NSwag;
 using NSwag.Generation.Processors.Security;
-using Sample.Core;
 using Sample.Extensions;
 using Sample.Extensions.Configurations;
 using Sample.Extensions.Interfaces;
+using Sample.Services;
+using Sample.Services.Weather;
 using Sample.Settings;
 
 namespace Sample

@@ -1,8 +1,8 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Sample.Core.Models;
+using Sample.Models;
 
-namespace Sample.Core
+namespace Sample.Services
 {
     public interface IWeatherForecaster
     {

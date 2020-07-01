@@ -2,9 +2,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Sample.Core.Models;
+using Sample.Models;
+using Sample.Services;
 
-namespace Sample.Core
+namespace Sample.Services.Weather
 {
     public class WeatherForecaster : IWeatherForecaster
     {
