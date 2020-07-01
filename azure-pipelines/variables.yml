@@ -3,7 +3,7 @@ variables:
   value: sample-project-template.sln
 
 - name: webAppProjectName
-  value: sample
+  value: sample.webapi
 
 - name: buildConfiguration
   value: Release
@@ -12,7 +12,7 @@ variables:
   value: arm/azure-deploy.json
 
 - name: webAppProjectPath
-  value: src/sample/$(webAppProjectName).csproj
+  value: src/$(webAppProjectName)/$(webAppProjectName).csproj
 
 - name: artifactName
   value: SampleDrop
