@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 
-namespace Sample.Core.Storage
+namespace Sample.Storage
 {
     public interface IStorage
     {

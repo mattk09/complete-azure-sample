@@ -1,4 +1,5 @@
-using Sample.Core.Storage;
+using Sample.Storage;
+using Sample.Storage.Memory;
 
 namespace Sample.Tests
 {

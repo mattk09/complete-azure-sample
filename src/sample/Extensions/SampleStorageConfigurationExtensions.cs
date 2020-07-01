@@ -1,9 +1,8 @@
-using System;
 using Microsoft.Extensions.DependencyInjection;
-using Sample.Core.Storage;
 using Sample.Exceptions;
 using Sample.Settings;
 using Sample.Storage;
+using Sample.Storage.Memory;
 using Sample.Storage.Settings;
 
 namespace Sample.Extensions

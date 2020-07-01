@@ -5,8 +5,9 @@ using System.IO;
 using System.Threading.Tasks;
 using Microsoft.IO;
 using Sample.Exceptions;
+using Sample.Storage;
 
-namespace Sample.Core.Storage
+namespace Sample.Storage.Memory
 {
     public class MemoryStorage : IStorage
     {

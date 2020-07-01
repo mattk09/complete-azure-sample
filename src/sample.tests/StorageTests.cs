@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using Sample.Core.Storage;
+using Sample.Storage;
 using Xunit;
 
 namespace Sample.Tests

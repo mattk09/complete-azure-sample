@@ -2,9 +2,8 @@
 using System.IO;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
 
-using Sample.Core.Storage;
+using Sample.Storage;
 
 namespace Sample.Controllers
 {
