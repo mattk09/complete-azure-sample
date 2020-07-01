@@ -22,7 +22,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\sample.core\sample.core.csproj" />
+    <ProjectReference Include="..\sample\sample.csproj" />
     <ProjectReference Include="..\sample.extensions\sample.extensions.csproj" />
     <ProjectReference Include="..\sample.storage.azure\sample.storage.azure.csproj" />
     <ProjectReference Include="..\sample.contracts\sample.contracts.csproj" />

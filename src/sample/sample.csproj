@@ -3,7 +3,7 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.1</TargetFramework>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
-    <RootNamespace>Sample.Core</RootNamespace>
+    <RootNamespace>Sample</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>

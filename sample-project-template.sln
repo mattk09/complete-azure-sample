@@ -9,7 +9,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "sample.webapi", "src\sample
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "sample.tests", "src\sample.tests\sample.tests.csproj", "{0BE5EDCC-35F9-4EC7-B2AB-54D5FE320A2C}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "sample.core", "src\sample.core\sample.core.csproj", "{412A0D8B-11F7-4913-9839-B6FFA7CBACCF}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "sample", "src\sample\sample.csproj", "{412A0D8B-11F7-4913-9839-B6FFA7CBACCF}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "sample.extensions", "src\sample.extensions\sample.extensions.csproj", "{651E5592-8650-41E4-ABF4-42BB6A641917}"
 EndProject
