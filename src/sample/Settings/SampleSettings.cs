@@ -1,4 +1,4 @@
-using Sample.Storage.Settings;
+using Sample.Storage.Azure.Settings;
 
 namespace Sample.Settings
 {

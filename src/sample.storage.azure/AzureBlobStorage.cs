@@ -4,9 +4,9 @@ using System.Threading.Tasks;
 using Azure.Storage.Blobs;
 using Sample.Exceptions;
 using Sample.Storage;
-using Sample.Storage.Settings;
+using Sample.Storage.Azure.Settings;
 
-namespace Sample.Storage
+namespace Sample.Storage.Azure
 {
     // This is a simple implementation to write to azure storage.  It lacks
     // a lot of validation and has some race conditions.  It is only  meant to

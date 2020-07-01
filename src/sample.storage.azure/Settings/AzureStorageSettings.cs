@@ -1,4 +1,4 @@
-namespace Sample.Storage.Settings
+namespace Sample.Storage.Azure.Settings
 {
     public class AzureStorageSettings
     {

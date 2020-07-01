@@ -2,8 +2,9 @@ using Microsoft.Extensions.DependencyInjection;
 using Sample.Exceptions;
 using Sample.Settings;
 using Sample.Storage;
+using Sample.Storage.Azure;
+using Sample.Storage.Azure.Settings;
 using Sample.Storage.Memory;
-using Sample.Storage.Settings;
 
 namespace Sample.Extensions
 {

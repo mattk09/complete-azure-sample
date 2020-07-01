@@ -13,7 +13,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "sample.core", "src\sample.c
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "sample.extensions", "src\sample.extensions\sample.extensions.csproj", "{651E5592-8650-41E4-ABF4-42BB6A641917}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "sample.storage", "src\sample.storage\sample.storage.csproj", "{8C179C12-FE95-4D4F-9D29-7DD45DF2A70B}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "sample.storage.azure", "src\sample.storage.azure\sample.storage.azure.csproj", "{8C179C12-FE95-4D4F-9D29-7DD45DF2A70B}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "sample.contracts", "src\sample.contracts\sample.contracts.csproj", "{B395B653-A570-437C-B4E5-37DA26D233EE}"
 EndProject
