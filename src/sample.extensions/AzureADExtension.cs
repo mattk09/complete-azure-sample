@@ -17,6 +17,9 @@ namespace Sample.Extensions
         {
             Guard.ThrowIfNull(authConfig, nameof(authConfig));
 
+            // Add even if disabled so dependencies can activate
+            services.AddSingleton<IAuthenticationConfiguration>(authConfig);
+
             if (!authConfig.Enabled)
             {
                 return services;

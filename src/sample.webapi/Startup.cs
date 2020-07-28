@@ -42,17 +42,14 @@ namespace Sample
 
             services.AddControllers();
 
-            var authConfig = Configuration.GetSection("Authentication")
-                .Get<AuthenticationConfiguration>();
-
-            services.AddSingleton<IAuthenticationConfiguration>(authConfig);
-            services.AddAzureAdAuthentication(authConfig);
+            // Add auth if configured
+            services.AddAzureAdAuthentication(settings.Authentication);
 
             // Register the Swagger services
             services.AddOpenApiDocument(configure =>
             {
                 configure.Title = "Sample API";
-                if (authConfig.Enabled)
+                if (settings.Authentication.Enabled)
                 {
                     configure.AddSecurity("JWT", Enumerable.Empty<string>(), new OpenApiSecurityScheme
                     {

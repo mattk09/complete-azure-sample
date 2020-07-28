@@ -6,9 +6,9 @@
             "type": "coreclr",
             "request": "launch",
             "preLaunchTask": "build",
-            "program": "${workspaceFolder}/src/sample/bin/Debug/netcoreapp3.1/sample.dll",
+            "program": "${workspaceFolder}/src/sample.webapi/bin/Debug/netcoreapp3.1/sample.webapi.dll",
             "args": [],
-            "cwd": "${workspaceFolder}/src/sample/bin/Debug/netcoreapp3.1",
+            "cwd": "${workspaceFolder}/src/sample.webapi/bin/Debug/netcoreapp3.1",
             "stopAtEntry": false,
             "launchBrowser": {
                 "enabled": true,
