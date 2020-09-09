@@ -4,7 +4,6 @@
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <IsPackable>false</IsPackable>
-    <RootNamespace>Sample.Tests</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>
@@ -25,9 +24,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\sample\sample.csproj" />
-    <ProjectReference Include="..\sample.extensions\sample.extensions.csproj" />
-    <ProjectReference Include="..\sample.contracts\sample.contracts.csproj" />
+    <ProjectReference Include="..\Sample\Sample.csproj" />
+    <ProjectReference Include="..\Sample.Extensions\Sample.Extensions.csproj" />
+    <ProjectReference Include="..\Sample.Contracts\Sample.Contracts.csproj" />
   </ItemGroup>
 
 </Project>
