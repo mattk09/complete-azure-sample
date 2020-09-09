@@ -1,9 +1,9 @@
 variables:
 - name: solutionPath
-  value: sample-project-template.sln
+  value: Sample.Project.Template.sln
 
 - name: webAppProjectName
-  value: sample.webapi
+  value: Sample.Webapi
 
 - name: buildConfiguration
   value: Release
