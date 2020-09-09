@@ -3,7 +3,7 @@ variables:
   value: Sample.Project.Template.sln
 
 - name: webAppProjectName
-  value: Sample.Webapi
+  value: Sample.WebApi
 
 - name: buildConfiguration
   value: Release
