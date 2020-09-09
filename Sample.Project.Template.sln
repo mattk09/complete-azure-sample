@@ -5,17 +5,17 @@ VisualStudioVersion = 16.0.30114.105
 MinimumVisualStudioVersion = 15.0.26124.0
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{4ECE521C-84DF-40F7-9B05-857FFE64D639}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "sample.webapi", "src\sample.webapi\sample.webapi.csproj", "{27BD0F0F-4E26-4A2E-AEF5-2F69FE5C8C73}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sample.Webapi", "src\Sample.Webapi\Sample.Webapi.csproj", "{27BD0F0F-4E26-4A2E-AEF5-2F69FE5C8C73}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "sample.tests", "src\sample.tests\sample.tests.csproj", "{0BE5EDCC-35F9-4EC7-B2AB-54D5FE320A2C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sample.Tests", "src\Sample.Tests\Sample.Tests.csproj", "{0BE5EDCC-35F9-4EC7-B2AB-54D5FE320A2C}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "sample", "src\sample\sample.csproj", "{412A0D8B-11F7-4913-9839-B6FFA7CBACCF}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sample", "src\Sample\Sample.csproj", "{412A0D8B-11F7-4913-9839-B6FFA7CBACCF}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "sample.extensions", "src\sample.extensions\sample.extensions.csproj", "{651E5592-8650-41E4-ABF4-42BB6A641917}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sample.Extensions", "src\Sample.Extensions\Sample.Extensions.csproj", "{651E5592-8650-41E4-ABF4-42BB6A641917}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "sample.storage.azure", "src\sample.storage.azure\sample.storage.azure.csproj", "{8C179C12-FE95-4D4F-9D29-7DD45DF2A70B}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sample.Storage.Azure", "src\Sample.Storage.Azure\Sample.Storage.Azure.csproj", "{8C179C12-FE95-4D4F-9D29-7DD45DF2A70B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "sample.contracts", "src\sample.contracts\sample.contracts.csproj", "{B395B653-A570-437C-B4E5-37DA26D233EE}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sample.Contracts", "src\Sample.Contracts\Sample.Contracts.csproj", "{B395B653-A570-437C-B4E5-37DA26D233EE}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
