@@ -6,6 +6,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using NSwag;
 using NSwag.Generation.Processors.Security;
+using Prometheus;
 using Sample.Extensions;
 using Sample.Extensions.Configurations;
 using Sample.Extensions.Interfaces;
@@ -98,6 +99,7 @@ namespace Sample
 
             app.UseEndpoints(endpoints =>
             {
+                endpoints.MapMetrics();
                 endpoints.MapControllers();
             });
         }
