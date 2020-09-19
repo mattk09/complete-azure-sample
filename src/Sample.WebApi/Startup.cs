@@ -6,6 +6,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using NSwag;
 using NSwag.Generation.Processors.Security;
+using OpenTelemetry.Trace;
 using Prometheus;
 using Sample.Extensions;
 using Sample.Extensions.Configurations;
@@ -63,6 +64,12 @@ namespace Sample
                     configure.OperationProcessors.Add(new AspNetCoreOperationSecurityScopeProcessor("JWT"));
                 }
             });
+
+            services.AddOpenTelemetryTracing((builder) =>
+                builder
+                    .AddAspNetCoreInstrumentation()
+                    .AddHttpClientInstrumentation()
+                    .AddConsoleExporter());
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
