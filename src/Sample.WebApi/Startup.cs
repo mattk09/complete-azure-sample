@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -6,11 +7,13 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using NSwag;
 using NSwag.Generation.Processors.Security;
+using OpenTelemetry;
 using OpenTelemetry.Trace;
 using Prometheus;
 using Sample.Extensions;
 using Sample.Extensions.Configurations;
 using Sample.Extensions.Interfaces;
+using Sample.Observability;
 using Sample.Services;
 using Sample.Services.Weather;
 using Sample.Settings;
@@ -38,6 +41,7 @@ namespace Sample
             services.AddApplicationInsightsTelemetry(this.Configuration);
 
             services.AddSingleton<IWeatherForecaster, WeatherForecaster>();
+            services.AddSingleton<IWeatherForecasterObservability, WeatherForecasterObservability>();
 
             // Add the the proper ISampleStorage and related services based on configuration
             services.AddSampleStorage(settings);
@@ -109,6 +113,24 @@ namespace Sample
                 endpoints.MapMetrics();
                 endpoints.MapControllers();
             });
+        }
+
+        private class WeatherForecasterObservability : IWeatherForecasterObservability
+        {
+            // private readonly TracerProvider tracerProvider;
+            private readonly Tracer tracer;
+
+            public WeatherForecasterObservability(TracerProvider tracerProvider)
+            {
+                this.tracer = tracerProvider.GetTracer(nameof(WeatherForecasterObservability));
+            }
+
+            public IDisposable GetForecast()
+            {
+                var span = this.tracer.StartSpan(nameof(GetForecast));
+
+                return span;
+            }
         }
     }
 }
