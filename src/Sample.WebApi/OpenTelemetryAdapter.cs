@@ -9,7 +9,9 @@ namespace Sample
 
         public OpenTelemetryAdapter(TracerProvider tracerProvider)
         {
-            this.tracer = tracerProvider.GetTracer(nameof(OpenTelemetryAdapter));
+            // this.tracer = tracerProvider.GetTracer(nameof(OpenTelemetryAdapter)); "Samples.SampleServer"
+            // TODO: Source must be added in the config, how to abstract this away?
+            this.tracer = tracerProvider.GetTracer("Samples.SampleServer");
         }
 
         public ISpanActivity StartSpanActivity(string name)
@@ -23,11 +25,16 @@ namespace Sample
 
             public static OpenTelemetrySpanAdapter StartSpan(Tracer tracer, string name)
             {
-                return new OpenTelemetrySpanAdapter() { Span = tracer.StartSpan(name, SpanKind.Internal, Tracer.CurrentSpan) };
+                return new OpenTelemetrySpanAdapter(tracer, name);
             }
 
-            private OpenTelemetrySpanAdapter()
+            private OpenTelemetrySpanAdapter(Tracer tracer, string name)
             {
+                var activity = System.Diagnostics.Activity.Current;
+                var current = Tracer.CurrentSpan;
+
+                // this.Span = tracer.StartSpan(name, kind: SpanKind.Internal, parentSpan: current);
+                this.Span = tracer.StartActiveSpan(name);
             }
 
             public void SetAttribute<T>(string key, T value)

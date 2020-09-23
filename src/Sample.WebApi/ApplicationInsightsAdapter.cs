@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -6,24 +5,8 @@ using Microsoft.ApplicationInsights;
 using Microsoft.ApplicationInsights.DataContracts;
 using Microsoft.ApplicationInsights.Extensibility;
 using Microsoft.ApplicationInsights.Extensibility.Implementation;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
-using NSwag;
-using NSwag.Generation.Processors.Security;
-using OpenTelemetry;
-using OpenTelemetry.Trace;
-using Prometheus;
-using Sample.Extensions;
-using Sample.Extensions.Configurations;
 using Sample.Extensions.Interfaces;
 using Sample.Observability;
-using Sample.Observability.Weather;
-using Sample.Services;
-using Sample.Services.Weather;
-using Sample.Settings;
 using Sample.Telemetry;
 
 namespace Sample

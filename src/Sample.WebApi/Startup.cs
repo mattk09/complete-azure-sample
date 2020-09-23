@@ -14,9 +14,11 @@ using Sample.Extensions;
 using Sample.Extensions.Configurations;
 using Sample.Extensions.Interfaces;
 using Sample.Observability;
+using Sample.Observability.Weather;
 using Sample.Services;
 using Sample.Services.Weather;
 using Sample.Settings;
+using Sample.Telemetry;
 
 namespace Sample
 {
@@ -36,14 +38,12 @@ namespace Sample
             var settings = new SampleSettings();
             this.Configuration.Bind(settings);
 
-            // By default this will look for 'ApplicationInsights:InstrumentationKey' in the configuration.
-            // This is added automatically by our 'AddAzureKeyVault' call in Program.cs
-            services.AddApplicationInsightsTelemetry(this.Configuration);
-
             services.AddSingleton<IWeatherForecaster, WeatherForecaster>();
             services.AddSingleton<IWeatherForecasterObservability, WeatherForecasterObservability>();
 
-            // Add the the proper ISampleStorage and related services based on configuration
+            services.AddSingleton<ISampleObservability, SampleObservability>();
+
+            // Add the proper ISampleStorage and related services based on configuration
             services.AddSampleStorage(settings);
 
             services.AddControllers();
@@ -69,11 +69,31 @@ namespace Sample
                 }
             });
 
-            services.AddOpenTelemetryTracing((builder) =>
-                builder
-                    .AddAspNetCoreInstrumentation()
-                    .AddHttpClientInstrumentation()
-                    .AddConsoleExporter());
+            bool useOpenTelemetry = true;
+            if (useOpenTelemetry)
+            {
+                services.AddTransient<ICoreTelemetry, OpenTelemetryAdapter>();
+                services.AddOpenTelemetryTracing((builder) =>
+                    builder
+                        .AddSource("Samples.SampleClient", "Samples.SampleServer")
+                        .AddAspNetCoreInstrumentation()
+                        .AddHttpClientInstrumentation()
+                        .AddJaegerExporter(jaegerOptions =>
+                        {
+                            jaegerOptions.ServiceName = "test-jaeger";
+                            jaegerOptions.AgentHost = "localhost";
+                            jaegerOptions.AgentPort = 6831;
+                        })
+                        .AddConsoleExporter());
+            }
+            else
+            {
+                // Use Application Insights
+                // By default this will look for 'ApplicationInsights:InstrumentationKey' in the configuration.
+                // This is added automatically by our 'AddAzureKeyVault' call in Program.cs
+                services.AddApplicationInsightsTelemetry(this.Configuration);
+                services.AddSingleton<ICoreTelemetry, ApplicationInsightsAdapter>();
+            }
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -115,19 +135,48 @@ namespace Sample
             });
         }
 
+        // Move these closer to implementation
         private class WeatherForecasterObservability : IWeatherForecasterObservability
         {
-            // private readonly TracerProvider tracerProvider;
-            private readonly Tracer tracer;
+            private readonly ICoreTelemetry telemetry;
 
-            public WeatherForecasterObservability(TracerProvider tracerProvider)
+            public WeatherForecasterObservability(ICoreTelemetry telemetry)
             {
-                this.tracer = tracerProvider.GetTracer(nameof(WeatherForecasterObservability));
+                this.telemetry = telemetry;
             }
 
             public IDisposable GetForecast()
             {
-                var span = this.tracer.StartSpan(nameof(GetForecast));
+                var span = this.telemetry.StartSpanActivity(nameof(GetForecast));
+                span.SetAttribute("TestKey", "TestValue");
+
+                return span;
+            }
+        }
+
+        private class SampleObservability : ISampleObservability
+        {
+            private readonly ICoreTelemetry telemetry;
+
+            public SampleObservability(ICoreTelemetry telemetry)
+            {
+                this.telemetry = telemetry;
+            }
+
+            // Consider a typed payload instead of primitives
+            public IDisposable StartOperation(int depth, int sequence)
+            {
+                var span = this.telemetry.StartSpanActivity(nameof(StartOperation));
+                span.SetAttribute("Depth", depth);
+                span.SetAttribute("Sequence", sequence);
+
+                return span;
+            }
+
+            public IDisposable StartSubOperation(int sequenceId)
+            {
+                var span = this.telemetry.StartSpanActivity(nameof(StartSubOperation));
+                span.SetAttribute("SequenceId", sequenceId);
 
                 return span;
             }

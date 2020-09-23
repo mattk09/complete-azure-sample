@@ -28,8 +28,9 @@ namespace Sample.Controllers
         public async Task GetAsync([FromQuery] int depth = 1, [FromQuery] int sequences = 2, [FromQuery] double chanceOfCalling = 0.5)
         {
             Random random = new Random();
+            using var operation = this.observability.StartOperation(depth, sequences);
 
-            await Task.Delay(TimeSpan.FromSeconds(random.Next(5)));
+            await Task.Delay(TimeSpan.FromSeconds(random.Next(2)));
 
             if (depth > 0)
             {
@@ -37,22 +38,24 @@ namespace Sample.Controllers
                 {
                     if (random.NextDouble() < chanceOfCalling)
                     {
-                        using var operation = this.observability.StartOperation(depth, i);
+                        using var suboperation = this.observability.StartOperation(depth, sequences);
 
                         await client.GetAsync(new Uri($"http://localhost:5000/SampleSpanProducer/next?depth={depth - 1}&sequences={sequences}&chanceOfCalling={chanceOfCalling}"));
                     }
                 }
             }
 
-            await Task.Delay(TimeSpan.FromSeconds(random.Next(2)));
+            // await Task.Delay(TimeSpan.FromSeconds(random.Next(2)));
         }
 
         [HttpGet("next")]
         public async Task GetNextAsync([FromQuery] int depth = 1, [FromQuery] int sequences = 2, [FromQuery] double chanceOfCalling = 0.5)
         {
             Random random = new Random();
+            using var operation = this.observability.StartOperation(depth, sequences);
 
-            await Task.Delay(TimeSpan.FromSeconds(random.Next(5)));
+            // Insert delay
+            await Task.Delay(TimeSpan.FromSeconds(1));
 
             if (depth > 0)
             {
@@ -60,7 +63,7 @@ namespace Sample.Controllers
                 {
                     if (random.NextDouble() < chanceOfCalling)
                     {
-                        using var operation = this.observability.StartOperation(depth, i);
+                        using var suboperation = this.observability.StartSubOperation(i);
 
                         // await client.GetAsync(new Uri($"http://localhost:5000/SampleSpanProducer/next?depth={depth - 1}&sequences={sequences}&chanceOfCalling={chanceOfCalling}"));
                         await this.GetNextAsync(depth - 1, sequences, chanceOfCalling);
@@ -68,7 +71,7 @@ namespace Sample.Controllers
                 }
             }
 
-            await Task.Delay(TimeSpan.FromSeconds(random.Next(2)));
+            // await Task.Delay(TimeSpan.FromSeconds(random.Next(2)));
         }
     }
 }

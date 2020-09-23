@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Sample.Models;
-using Sample.Observability;
+using Sample.Observability.Weather;
 using Sample.Services;
 
 namespace Sample.Services.Weather
@@ -25,7 +25,6 @@ namespace Sample.Services.Weather
         public Task<IEnumerable<WeatherForecast>> GetForecastAsync()
         {
             using var activity = this.observability.GetForecast();
-
             var random = new Random();
 
             var forecast = Enumerable.Range(1, 5)
