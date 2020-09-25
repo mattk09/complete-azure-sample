@@ -46,11 +46,10 @@ namespace Sample
                     this.activity.SetParentId(Activity.Current.Id);
                 }
 
-                activity.Start();
-
                 this.telemetryClient = telemetryClient;
 
                 this.request = this.telemetryClient.StartOperation<DependencyTelemetry>(activity);
+                this.request.Telemetry.Type = name;
             }
 
             public void SetAttribute<T>(string key, T value)
