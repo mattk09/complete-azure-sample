@@ -69,8 +69,7 @@ namespace Sample
                 }
             });
 
-            bool useOpenTelemetry = true;
-            if (useOpenTelemetry)
+            if (settings.Features.Telemetry == TelemetrySdk.OpenTelemetry)
             {
                 services.AddTransient<ICoreTelemetry, OpenTelemetryAdapter>();
                 services.AddOpenTelemetryTracing((builder) =>
@@ -86,13 +85,18 @@ namespace Sample
                         })
                         .AddConsoleExporter());
             }
-            else
+            else if (settings.Features.Telemetry == TelemetrySdk.ApplicationInsights)
             {
                 // Use Application Insights
                 // By default this will look for 'ApplicationInsights:InstrumentationKey' in the configuration.
                 // This is added automatically by our 'AddAzureKeyVault' call in Program.cs
                 services.AddApplicationInsightsTelemetry(this.Configuration);
                 services.AddSingleton<ICoreTelemetry, ApplicationInsightsAdapter>();
+            }
+            else
+            {
+                // Telemetry set to None
+                services.AddSingleton<ICoreTelemetry, NullCoreTelemetry>();
             }
         }
 
