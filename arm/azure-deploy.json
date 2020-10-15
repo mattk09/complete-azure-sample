@@ -39,6 +39,7 @@
     "storageAccountSku": "Standard_LRS",
     "storageAccountApiVersion": "2018-07-01",
     "appInsightsName": "[parameters('name')]",
+    "functionsAppName": "[concat(parameters('name'), '-functions')]",
     "keyVaultName": "[toLower(take(replace(replace(parameters('name'), '-', ''), '_', ''), 24))]",
     "keyVaultSku": {
       "family": "A",
@@ -99,6 +100,38 @@
       "sku": {
         "name": "[variables('storageAccountSku')]"
       }
+    },
+    {
+        "apiVersion": "2015-08-01",
+        "type": "Microsoft.Web/sites",
+        "name": "[variables('functionsAppName')]",
+        "location": "[resourceGroup().location]",
+        "kind": "functionapp,linux",
+        "properties": {
+          "serverFarmId": "[resourceId('Microsoft.Web/serverfarms', variables('appServicePlanName'))]",
+          "reserved": true,
+          "siteConfig": {
+            "appSettings": [
+              {
+                  "name": "AzureWebJobsStorage",
+                  "value": "[concat('DefaultEndpointsProtocol=https;AccountName=', variables('storageAccountName'), ';AccountKey=', listKeys(resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName')), variables('storageAccountApiVersion')).keys[0].value)]"
+              },
+              {
+                  "name": "FUNCTIONS_WORKER_RUNTIME",
+                  "value": "dotnet"
+              },
+              {
+                  "name": "FUNCTIONS_EXTENSION_VERSION",
+                  "value": "~2"
+              }
+            ]
+          }
+        },
+        "dependsOn": [
+            "[resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName'))]",
+            "[resourceId('Microsoft.Insights/components', variables('appInsightsName'))]",
+            "[resourceId('Microsoft.Web/serverfarms', variables('appServicePlanName'))]"
+        ]
     },
     {
       "name": "[variables('appInsightsName')]",
