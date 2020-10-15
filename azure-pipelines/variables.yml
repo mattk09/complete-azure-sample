@@ -5,6 +5,9 @@ variables:
 - name: webAppProjectName
   value: Sample.WebApi
 
+- name: functionsProjectName
+  value: Sample.Functions
+
 - name: buildConfiguration
   value: Release
 
@@ -13,6 +16,9 @@ variables:
 
 - name: webAppProjectPath
   value: src/$(webAppProjectName)/$(webAppProjectName).csproj
+
+- name: functionsProjectPath
+  value: src/$(functionsProjectName)/$(functionsProjectName).csproj
 
 - name: artifactName
   value: SampleDrop

@@ -95,7 +95,16 @@ stages:
       displayName: Publish Web App
       inputs:
         command: publish
+        publishWebProjects: false
         projects: $(webAppProjectPath)
+        arguments: --configuration $(buildConfiguration) --output $(Build.ArtifactStagingDirectory)
+
+    - task: DotNetCoreCLI@2
+      displayName: Publish Functions App
+      inputs:
+        command: publish
+        publishWebProjects: false
+        projects: $(functionsProjectPath)
         arguments: --configuration $(buildConfiguration) --output $(Build.ArtifactStagingDirectory)
 
     - task: CopyFiles@2
@@ -150,8 +159,10 @@ stages:
               $output = ConvertFrom-Json '$(ArmDeploymentOutput)' -Depth 10
 
               $WebAppName  = $output.result.value.WebAppName
+              $FunctionsAppName  = $output.result.value.FunctionsAppName
 
               Write-Host "##vso[task.setvariable variable=WEB_APP_NAME]$WebAppName"
+              Write-Host "##vso[task.setvariable variable=FUNCTIONS_APP_NAME]$FunctionsAppName"
             failOnStderr: true
             displayName: Create variables from ARM deployment outputs
 
@@ -165,6 +176,13 @@ stages:
               packageForLinux: $(Pipeline.Workspace)/$(artifactName)/$(webAppProjectName).zip
               runtimeStack: DOTNETCORE|3.1
               startupCommand: /home/site/wwwroot/$(webAppProjectName)
+
+          - task: AzureFunctionApp@1
+            inputs:
+              azureSubscription: $(azureSubscriptionServiceConnectionName)
+              appType: functionAppLinux
+              appName: $(FUNCTIONS_APP_NAME)
+              package: $(Pipeline.Workspace)/$(artifactName)/$(functionsProjectName).zip
 
           - script: |
               echo $(ArmDeploymentOutput)
