@@ -1,10 +1,18 @@
-name: .NET
+name: dotnet build
 
 on:
+  workflow_dispatch:
   push:
-    branches: [ master ]
+    branches:
   pull_request:
-    branches: [ master ]
+    branches: [ main ]
+
+env:
+  IS_MAIN_PUSH: ${{github.ref == 'refs/heads/main' && github.event_name == 'push'}}
+  AZURE_RESOURCE_GROUP_NAME: mattk09-centralus
+  AZURE_RESOURCE_GROUP_LOCATION: centralus
+  BUILD_CONFIGURATION: Release
+  DOTNET_VERSION: 6.0.x
 
 jobs:
   build:
@@ -13,13 +21,86 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
+
     - name: Setup .NET
       uses: actions/setup-dotnet@v1
       with:
-        dotnet-version: 3.1.301
+        dotnet-version: ${{ env.DOTNET_VERSION }}
+
     - name: Restore dependencies
       run: dotnet restore
+
     - name: Build
       run: dotnet build --no-restore
+
     - name: Test
       run: dotnet test --no-build --verbosity normal
+
+    - name: Publish
+      run: dotnet publish src/Sample.WebApi/Sample.WebApi.csproj --configuration ${{ env.BUILD_CONFIGURATION }}
+
+    - name: Upload WebApp Build Artifact
+      uses: actions/upload-artifact@v2
+      with:
+        name: Sample.WebApi
+        path: src/Sample.WebApi/bin/${{ env.BUILD_CONFIGURATION }}/net6.0/publish/
+
+    - name: Last step diagnostics
+      if: always()
+      run: |
+        pwd
+        printenv | sort
+        ls -alFR -I.git
+
+  deploy:
+
+    runs-on: ubuntu-latest
+    needs: build
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Download WebApSample.WebApip
+      uses: actions/download-artifact@v2.0.8
+      with:
+        name: Sample.WebApi
+        path: Sample.WebApi
+
+    - name: Azure Login
+      uses: azure/login@v1
+      with:
+        creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+    - name: Set current Azure Subscription
+      run: |
+        az account show
+        echo "AZURE_SUBSCRIPTION_ID=$(az account show --query "id" --output tsv)" >> $GITHUB_ENV
+
+    - name: Create Azure Resource Group 
+      uses: Azure/CLI@v1
+      with:
+        inlineScript: |
+          #!/bin/bash
+          az group create --name $AZURE_RESOURCE_GROUP_NAME --location $AZURE_RESOURCE_GROUP_LOCATION
+
+    - name: Deploy bicep
+      uses: azure/arm-deploy@v1
+      with:
+        subscriptionId: ${{ env.AZURE_SUBSCRIPTION_ID }}
+        resourceGroupName: ${{ env.AZURE_RESOURCE_GROUP_NAME }}
+        template: ./bicep/main.bicep
+        failOnStdErr: false
+
+    - name: Deploy Sample.WebApi
+      uses: azure/webapps-deploy@v2
+      with:
+        app-name: ${{ env.AZURE_RESOURCE_GROUP_NAME }}
+        package: Sample.WebApi
+
+    - name: Last step diagnostics
+      if: always()
+      run: |
+        pwd
+        printenv | sort
+        ls -alFR -I.git
