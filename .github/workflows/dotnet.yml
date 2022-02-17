@@ -25,4 +25,7 @@ jobs:
     - name: Test
       run: dotnet test --no-build --verbosity normal
 
-      
+
+    - uses: azure/login@v1
+      with:
+        creds: ${{ secrets.AZURE_CREDENTIALS }}
