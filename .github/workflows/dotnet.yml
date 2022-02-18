@@ -39,11 +39,13 @@ jobs:
       with:
         inlineScript: |
           #!/bin/bash
-          az group create --name github-test --location westus2
+          az group create --name mattk09-test --location westus2
 
     - name: Run ARM deploy
       uses: azure/arm-deploy@v1
       with:
         subscriptionId: 1920eb56-847c-4683-8764-7719e29a4828
-        resourceGroupName: github-test
+        resourceGroupName: mattk09-test
         template: ./arm/azure-deploy.json
+        deploymentMode: Incremental
+
