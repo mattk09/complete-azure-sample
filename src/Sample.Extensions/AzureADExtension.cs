@@ -36,7 +36,7 @@ namespace Sample.Extensions
                 .RequireAuthenticatedUser()
                 .Build();
                 config.Filters.Add(new AuthorizeFilter(policy));
-            }).SetCompatibilityVersion(CompatibilityVersion.Version_3_0);
+            });
 
             services.Configure<JwtBearerOptions>(AzureADDefaults.JwtBearerAuthenticationScheme, options =>
             {

@@ -1,4 +1,4 @@
-name: .NET
+name: bicep test
 
 on:
   workflow_dispatch:
