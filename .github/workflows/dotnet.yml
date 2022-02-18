@@ -26,6 +26,26 @@ jobs:
       run: dotnet test --no-build --verbosity normal
 
 
-    - uses: azure/login@v1
+    - name: Azure Login
+      uses: azure/login@v1
       with:
         creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+    - name: Test az cli
+      run: |
+        az account show
+
+    - uses: Azure/CLI@v1
+      with:
+        inlineScript: |
+          #!/bin/bash
+          az group create --name mattk09-test --location westus2
+
+    - name: Run ARM deploy
+      uses: azure/arm-deploy@v1
+      with:
+        subscriptionId: 1920eb56-847c-4683-8764-7719e29a4828
+        resourceGroupName: mattk09-test
+        template: ./arm/azure-deploy.json
+        deploymentMode: Incremental
+
