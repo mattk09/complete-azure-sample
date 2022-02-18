@@ -14,10 +14,6 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
-    - name: Test az cli
-      run: |
-        az account show
-        echo hi
     - name: Setup .NET
       uses: actions/setup-dotnet@v1
       with:
@@ -34,3 +30,7 @@ jobs:
       uses: azure/login@v1
       with:
         creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+    - name: Test az cli
+      run: |
+        az account show
