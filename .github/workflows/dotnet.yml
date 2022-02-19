@@ -96,12 +96,11 @@ jobs:
       with:
         app-name: ${{ env.AZURE_RESOURCE_GROUP_NAME }}
         resourceGroupName: ${{ env.AZURE_RESOURCE_GROUP_NAME }}
-        #slot-name: staging
         package: Sample.WebApi
 
-      - name: Last step diagnostics
-        if: always()
-        run: |
-          pwd
-          printenv | sort
-          ls -alFR -I.git
+    - name: Last step diagnostics
+      if: always()
+      run: |
+        pwd
+        printenv | sort
+        ls -alFR -I.git
