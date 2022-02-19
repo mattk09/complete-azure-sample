@@ -7,6 +7,12 @@ on:
   pull_request:
     branches: [ main ]
 
+env:
+  IS_MAIN_PUSH: ${{github.ref == 'refs/heads/main' && github.event_name == 'push'}}
+  AZURE_RESOURCE_GROUP_NAME: mattk09-centralus
+  AZURE_RESOURCE_GROUP_LOCATION: centralus
+  BUILD_CONFIGURATION: Release
+
 jobs:
   build:
 
@@ -14,24 +20,66 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
+
     - name: Setup .NET
       uses: actions/setup-dotnet@v1
       with:
         dotnet-version: 6.0.x
+
     - name: Restore dependencies
       run: dotnet restore
+
     - name: Build
       run: dotnet build --no-restore
+
     - name: Test
       run: dotnet test --no-build --verbosity normal
 
+    - name: Publish
+      run: dotnet publish src/Sample.WebApi/Sample.WebApi.csproj --configuration ${{ env.BUILD_CONFIGURATION }}
 
+    - name: Upload WebApp Build Artifact
+      uses: actions/upload-artifact@v2
+      with:
+        name: Sample.WebApi
+        path: src/Sample.WebApi/bin/${{ env.BUILD_CONFIGURATION }}/net6.0/publish/
+
+    - name: Last step diagnostics
+      if: always()
+      run: |
+        pwd
+        printenv | sort
+        ls -R
+
+  deploy:
+
+    runs-on: ubuntu-latest
+
+    steps:
     - name: Azure Login
       uses: azure/login@v1
       with:
         creds: ${{ secrets.AZURE_CREDENTIALS }}
 
-    - name: Test az cli
+    - name: Set current Azure Subscription
       run: |
         az account show
+        echo "AZURE_SUBSCRIPTION_ID=$(az account show --query "id" --output tsv)" >> $GITHUB_ENV
 
+    - name: Create Azure Resource Group 
+      uses: Azure/CLI@v1
+      with:
+        inlineScript: |
+          #!/bin/bash
+          az group create --name $AZURE_RESOURCE_GROUP_NAME --location $AZURE_RESOURCE_GROUP_LOCATION
+
+    - name: Deploy bicep
+      uses: azure/arm-deploy@v1
+      with:
+        subscriptionId: ${{ env.AZURE_SUBSCRIPTION_ID }}
+        resourceGroupName: ${{ env.AZURE_RESOURCE_GROUP_NAME }}
+        template: ./bicep/main.bicep
+        failOnStdErr: false
+
+    - name: deploy
+      run: echo test
