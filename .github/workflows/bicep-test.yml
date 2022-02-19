@@ -2,8 +2,6 @@ name: bicep test
 
 on:
   workflow_dispatch:
-  push:
-    branches: '*'
 
 env:
   AZURE_RESOURCE_GROUP_NAME: mattk09-centralus
