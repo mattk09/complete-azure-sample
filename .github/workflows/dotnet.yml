@@ -37,9 +37,11 @@ jobs:
       run: dotnet test --no-build --verbosity normal
 
     - name: Publish
+      if: IS_MAIN_PUSH
       run: dotnet publish src/Sample.WebApi/Sample.WebApi.csproj --configuration ${{ env.BUILD_CONFIGURATION }}
 
     - name: Upload WebApp Build Artifact
+      if: IS_MAIN_PUSH
       uses: actions/upload-artifact@v2
       with:
         name: Sample.WebApi
