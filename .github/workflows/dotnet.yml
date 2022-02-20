@@ -56,7 +56,7 @@ jobs:
 
     runs-on: ubuntu-latest
     needs: build
-    if: IS_MAIN_PUSH == 'true'
+    if: ${{ env.IS_MAIN_PUSH }} == 'true'
 
     steps:
     - uses: actions/checkout@v2
