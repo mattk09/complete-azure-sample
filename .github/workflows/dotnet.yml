@@ -8,7 +8,7 @@ on:
     branches: [ main ]
 
 env:
-  IS_MAIN_PUSH: ${{github.ref == 'refs/heads/main' && github.event_name == 'push'}}
+  IS_MAIN_PUSH: ${{ github.ref == 'refs/heads/main' && github.event_name == 'push' }}
   AZURE_RESOURCE_GROUP_NAME: mattk09-centralus
   AZURE_RESOURCE_GROUP_LOCATION: centralus
   BUILD_CONFIGURATION: Release
@@ -37,9 +37,11 @@ jobs:
       run: dotnet test --no-build --verbosity normal
 
     - name: Publish
+      if: success() && env.IS_MAIN_PUSH == 'true'
       run: dotnet publish src/Sample.WebApi/Sample.WebApi.csproj --configuration ${{ env.BUILD_CONFIGURATION }}
 
     - name: Upload WebApp Build Artifact
+      if: success() && env.IS_MAIN_PUSH == 'true'
       uses: actions/upload-artifact@v2
       with:
         name: Sample.WebApi
