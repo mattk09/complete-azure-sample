@@ -67,7 +67,7 @@ jobs:
       uses: actions/download-artifact@v2.0.8
       with:
         name: Sample.WebApi
-        path: Sample.WebApi
+        path: packages/Sample.WebApi
 
     - name: Azure Login
       uses: azure/login@v1
@@ -98,7 +98,7 @@ jobs:
       uses: azure/webapps-deploy@v2
       with:
         app-name: ${{ env.AZURE_RESOURCE_GROUP_NAME }}
-        package: Sample.WebApi
+        package: packages/Sample.WebApi
 
     - name: Last step diagnostics
       if: always()
