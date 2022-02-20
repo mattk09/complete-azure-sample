@@ -56,7 +56,7 @@ jobs:
 
     runs-on: ubuntu-latest
     needs: build
-    if: ${{ env.IS_MAIN_PUSH }} == 'true'
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
 
     steps:
     - uses: actions/checkout@v2
