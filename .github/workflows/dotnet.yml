@@ -13,6 +13,13 @@ env:
   AZURE_RESOURCE_GROUP_LOCATION: centralus
   BUILD_CONFIGURATION: Release
   DOTNET_VERSION: 6.0.x
+  ADDITIONAL_STUFF: "{\"items\": [{\"name\": \"Sample\"}]}"
+  ADDITIONAL_KEY_VAULT_SECRETS: '{"items": [{"name": "Sample--Secret", "secret": "Sample-Secret" }]}'
+#      {
+#        "items": [
+#          {"name": "Sample--Secret", "secret": "Sample-Secret" }
+#        ]
+#      }
 
 jobs:
   build:
@@ -110,6 +117,7 @@ jobs:
         resourceGroupName: ${{ env.AZURE_RESOURCE_GROUP_NAME }}
         template: ./bicep/main.bicep
         failOnStdErr: false
+        parameters: additionalSecrets="${{ env.ADDITIONAL_KEY_VAULT_SECRETS }}"
 
     - name: Deploy Sample.WebApi
       uses: azure/webapps-deploy@v2
@@ -119,7 +127,6 @@ jobs:
 
     - name: Deploy Sample.Functions
       uses: Azure/functions-action@v1
-      id: fa
       with:
         app-name: ${{ env.AZURE_RESOURCE_GROUP_NAME }}-functions
         package: packages/Sample.Functions
