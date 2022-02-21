@@ -2,6 +2,10 @@ name: dotnet build
 
 on:
   workflow_dispatch:
+    inputs:
+      resource-group-name:
+        required: false
+        type: string
   push:
     branches:
   pull_request:
@@ -9,7 +13,7 @@ on:
 
 env:
   IS_MAIN_PUSH: ${{ github.ref == 'refs/heads/main' && github.event_name == 'push' }}
-  AZURE_RESOURCE_GROUP_NAME: mattk09-centralus
+  AZURE_RESOURCE_GROUP_NAME: ${{ github.event.inputs.resource-group-name || 'mattk09-centralus' }}
   AZURE_RESOURCE_GROUP_LOCATION: centralus
   BUILD_CONFIGURATION: Release
   DOTNET_VERSION: 6.0.x
