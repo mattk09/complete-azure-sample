@@ -40,7 +40,7 @@ jobs:
       if: success() && env.IS_MAIN_PUSH == 'true'
       run: dotnet publish src/Sample.WebApi/Sample.WebApi.csproj --configuration ${{ env.BUILD_CONFIGURATION }} --output published/Sample.WebApi
 
-    - name: Upload WebApp Build Artifact
+    - name: Upload WebApi Build Artifact
       if: success() && env.IS_MAIN_PUSH == 'true'
       uses: actions/upload-artifact@v2
       with:
@@ -121,9 +121,8 @@ jobs:
       uses: Azure/functions-action@v1
       id: fa
       with:
-        app-name: ${{ env.AZURE_RESOURCE_GROUP_NAME }}-function
+        app-name: ${{ env.AZURE_RESOURCE_GROUP_NAME }}-functions
         package: packages/Sample.Functions
-
 
     - name: Last step diagnostics
       if: always()
