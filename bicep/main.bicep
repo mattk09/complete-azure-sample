@@ -32,7 +32,7 @@ var webAppName = name
 var storageAccountName = toLower(take(replace(replace(name, '-', ''), '_', ''), 24))
 var appInsightsName = name
 var functionsAppName = '${name}-functions'
-var keyVaultName = toLower(take(replace(replace(name, '-', ''), '_', ''), 24))
+var keyVaultName = toLower(take(replace(name, '_', ''), 24))
 var keyVaultSku = {
   family: 'A'
   name: 'standard'
