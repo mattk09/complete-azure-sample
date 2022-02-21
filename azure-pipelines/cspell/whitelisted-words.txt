@@ -1,3 +1,0 @@
-Swashbuckle
-appsettings
-onmicrosoft

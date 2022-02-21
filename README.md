@@ -6,8 +6,7 @@ Depending on your project needs, you may not need all components or pieces inclu
 
 ## Project Features
 
-- ASP.NET Core 3.1 WebApi
-  - [Authentication with Azure Active Directory](./Authentication.md)
+- net 6.0 WebApi
 - CI/CD (all yaml/stages)
   - Build
   - Analyzers
@@ -22,17 +21,6 @@ Depending on your project needs, you may not need all components or pieces inclu
 - Swagger using [NSwag][swagger-nswag]
   - [Swashbuckle][swagger-swashbuckle] is another alternative
   - Navigate to `/swagger` endpoint to view
-
-Pending Work:
-
-- Dependency Injection samples
-- Logging examples
-- Authorization
-- Simulators for services (auth)
-- Health probes
-- Extended ApplicationInsights alerts/monitoring/dashboard examples
-- WebApp Deployment Slots
-- Best practices for managing KeyVault contents (How do we add external secrets not coming from ARM)
 
 ## Feature Details
 
