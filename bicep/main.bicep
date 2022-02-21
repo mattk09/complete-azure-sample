@@ -139,7 +139,7 @@ resource keyVaultName_AzureStorageSettings_ConnectionString 'Microsoft.KeyVault/
 }
 
 resource keyVaultName_additionalSecrets_items_name 'Microsoft.KeyVault/vaults/secrets@2021-10-01' = [for i in range(0, length(additionalSecrets.items)): {
-  name: '${keyVaultName}/${additionalSecrets.items[i].name}'
+  name: '${keyVault.name}/${additionalSecrets.items[i].name}'
   properties: {
     value: additionalSecrets.items[i].secret
   }
