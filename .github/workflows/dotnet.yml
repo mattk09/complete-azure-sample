@@ -13,13 +13,12 @@ env:
   AZURE_RESOURCE_GROUP_LOCATION: centralus
   BUILD_CONFIGURATION: Release
   DOTNET_VERSION: 6.0.x
-  ADDITIONAL_STUFF: "{\"items\": [{\"name\": \"Sample\"}]}"
-  ADDITIONAL_KEY_VAULT_SECRETS: '{"items": [{"name": "Sample--Secret", "secret": "Sample-Secret" }]}'
-#      {
-#        "items": [
-#          {"name": "Sample--Secret", "secret": "Sample-Secret" }
-#        ]
-#      }
+  ADDITIONAL_KEY_VAULT_SECRETS: >-
+      {
+        \"items\": [
+          {\"name\": \"Sample--Secret\", \"secret\": \"Sample-Secret\" }
+        ]
+      }
 
 jobs:
   build:
