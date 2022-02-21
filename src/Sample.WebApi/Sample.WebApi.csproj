@@ -22,7 +22,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Sample\Sample.csproj" />
-    <ProjectReference Include="..\Sample.Extensions\Sample.Extensions.csproj" />
     <ProjectReference Include="..\Sample.Storage.Azure\Sample.Storage.Azure.csproj" />
     <ProjectReference Include="..\Sample.Contracts\Sample.Contracts.csproj" />
   </ItemGroup>

@@ -5,10 +5,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using NSwag;
-using NSwag.Generation.Processors.Security;
 using Sample.Extensions;
-using Sample.Extensions.Configurations;
-using Sample.Extensions.Interfaces;
 using Sample.Services;
 using Sample.Services.Weather;
 using Sample.Settings;
@@ -42,26 +39,8 @@ namespace Sample
 
             services.AddControllers();
 
-            // Add auth if configured
-            services.AddAzureAdAuthentication(settings.Authentication);
-
             // Register the Swagger services
-            services.AddOpenApiDocument(configure =>
-            {
-                configure.Title = "Sample API";
-                if (settings.Authentication.Enabled)
-                {
-                    configure.AddSecurity("JWT", Enumerable.Empty<string>(), new OpenApiSecurityScheme
-                    {
-                        Type = OpenApiSecuritySchemeType.ApiKey,
-                        Name = "Authorization",
-                        In = OpenApiSecurityApiKeyLocation.Header,
-                        Description = "Paste at the textbox bellow: Bearer {your JWT id_token}.",
-                    });
-
-                    configure.OperationProcessors.Add(new AspNetCoreOperationSecurityScopeProcessor("JWT"));
-                }
-            });
+            services.AddOpenApiDocument();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -76,7 +55,7 @@ namespace Sample
                 app.UseHttpsRedirection();
             }
 
-            // Use middleware to route / to swagger
+            // Use middleware to route '/' to swagger
             app.Use(async (context, nextAsync) =>
             {
                 if (context.Request.Path.Value == "/")

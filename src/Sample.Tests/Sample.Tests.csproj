@@ -25,7 +25,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Sample\Sample.csproj" />
-    <ProjectReference Include="..\Sample.Extensions\Sample.Extensions.csproj" />
     <ProjectReference Include="..\Sample.Contracts\Sample.Contracts.csproj" />
   </ItemGroup>
 
