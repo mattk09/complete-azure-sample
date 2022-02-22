@@ -111,7 +111,7 @@ resource keyVault 'Microsoft.KeyVault/vaults@2021-10-01' = {
             'list'
           ]
         }
-      },
+      }
       {
         tenantId: functionsApp.identity.tenantId
         objectId: functionsApp.identity.principalId
