@@ -4,15 +4,22 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 
 namespace Sample.Functions
 {
-    public static class HelloWorld
+    public class HelloWorld
     {
+        private readonly IConfiguration configuration;
+        public HelloWorld(IConfiguration configuration)
+        {
+            this.configuration = configuration;
+        }
+
         [FunctionName("HelloWorld")]
-        public static async Task<IActionResult> Run(
+        public async Task<IActionResult> Run(
             [HttpTrigger(AuthorizationLevel.Anonymous, "get", "post", Route = null)] HttpRequest request,
             ILogger log)
         {
@@ -27,6 +34,11 @@ namespace Sample.Functions
             string responseMessage = string.IsNullOrEmpty(name)
                 ? "This HTTP triggered function executed successfully. Pass a name in the query string or in the request body for a personalized response."
                 : $"Hello, {name}. This HTTP triggered function executed successfully.";
+
+            if (name == "config")
+            {
+                return new OkObjectResult(this.configuration);
+            }
 
             return new OkObjectResult(responseMessage);
         }
