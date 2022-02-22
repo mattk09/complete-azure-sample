@@ -1,9 +1,6 @@
 using System;
 using Microsoft.Azure.Functions.Extensions.DependencyInjection;
-using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using Azure.Extensions.AspNetCore.Configuration.Secrets;
 using Azure.Identity;
 
 [assembly: FunctionsStartup(typeof(Sample.Functions.Startup))]
@@ -23,7 +20,8 @@ namespace Sample.Functions
             {
                 builder.ConfigurationBuilder.AddAzureKeyVault(
                     new Uri($"https://{keyVaultName}.vault.azure.net/"),
-                    new DefaultAzureCredential());
+                    new DefaultAzureCredential())
+                    .Build();
             }
         }
 
