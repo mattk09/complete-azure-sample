@@ -80,7 +80,7 @@ resource webAppName_appsettings 'Microsoft.Web/sites/config@2021-03-01' = {
   parent: webApp
   name: 'appsettings'
   properties: {
-    KeyVaultNameFromDeployment: keyVaultName
+    KeyVaultNameFromDeployment: keyVault.name
   }
 }
 
@@ -179,6 +179,10 @@ resource functionsApp 'Microsoft.Web/sites@2021-03-01' = {
         {
           name: 'FUNCTIONS_EXTENSION_VERSION'
           value: '~4'
+        }
+        {
+          name: 'KeyVaultNameFromDeployment'
+          value: keyVaultName
         }
       ]
     }
