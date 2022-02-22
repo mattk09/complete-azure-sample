@@ -1,10 +1,8 @@
-using System.Linq;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using NSwag;
 using Sample.Extensions;
 using Sample.Services;
 using Sample.Services.Weather;
@@ -27,6 +25,8 @@ namespace Sample
             // Read 'SampleSettings'
             var settings = new SampleSettings();
             this.Configuration.Bind(settings);
+
+            services.AddHealthChecks();
 
             // By default this will look for 'ApplicationInsights:InstrumentationKey' in the configuration.
             // This is added automatically by our 'AddAzureKeyVault' call in Program.cs
@@ -78,6 +78,7 @@ namespace Sample
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
+                endpoints.MapHealthChecks("healthcheck");
             });
         }
     }
