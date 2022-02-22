@@ -111,6 +111,16 @@ resource keyVault 'Microsoft.KeyVault/vaults@2021-10-01' = {
             'list'
           ]
         }
+      },
+      {
+        tenantId: functionsApp.identity.tenantId
+        objectId: functionsApp.identity.principalId
+        permissions: {
+          secrets: [
+            'get'
+            'list'
+          ]
+        }
       }
     ]
     sku: keyVaultSku
@@ -149,6 +159,9 @@ resource keyVaultName_additionalSecrets_items_name 'Microsoft.KeyVault/vaults/se
 resource functionsApp 'Microsoft.Web/sites@2021-03-01' = {
   name: functionsAppName
   location: location
+  identity: {
+    type: 'SystemAssigned'
+  }
   kind: 'functionapp,linux'
   properties: {
     serverFarmId: appServicePlan.id
