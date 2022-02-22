@@ -178,7 +178,7 @@ resource functionsApp 'Microsoft.Web/sites@2021-03-01' = {
         }
         {
           name: 'FUNCTIONS_EXTENSION_VERSION'
-          value: '~3'
+          value: '~4'
         }
       ]
     }
