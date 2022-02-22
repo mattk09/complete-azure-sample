@@ -1,4 +1,5 @@
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.WebJobs;
@@ -37,7 +38,7 @@ namespace Sample.Functions
 
             if (name == "config")
             {
-                return new OkObjectResult(this.configuration);
+                return new OkObjectResult(this.configuration.AsEnumerable().ToDictionary(kvp => kvp.Key, kvp => kvp.Value));
             }
 
             return new OkObjectResult(responseMessage);

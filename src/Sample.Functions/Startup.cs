@@ -11,19 +11,14 @@ namespace Sample.Functions
     {
         public override void ConfigureAppConfiguration(IFunctionsConfigurationBuilder builder)
         {
-            var context = builder.GetContext();
-
-            var builtConfig = context.Configuration;
+            var builtConfig = builder.ConfigurationBuilder.Build();
             var keyVaultName = builtConfig["KeyVaultNameFromDeployment"];
-
-            Console.WriteLine($"keyVaultName: {keyVaultName}");
 
             if (!string.IsNullOrEmpty(keyVaultName))
             {
                 builder.ConfigurationBuilder.AddAzureKeyVault(
                     new Uri($"https://{keyVaultName}.vault.azure.net/"),
-                    new DefaultAzureCredential())
-                    .Build();
+                    new DefaultAzureCredential());
             }
         }
 
