@@ -70,6 +70,7 @@ resource webApp 'Microsoft.Web/sites@2021-03-01' = {
     serverFarmId: appServicePlan.id
     siteConfig: {
       linuxFxVersion: 'DOTNETCORE|6.0'
+      healthCheckPath: 'healthcheck'
     }
     httpsOnly: true
   }
