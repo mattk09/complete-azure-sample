@@ -16,6 +16,8 @@ namespace Sample.Functions
             var builtConfig = context.Configuration;
             var keyVaultName = builtConfig["KeyVaultNameFromDeployment"];
 
+            Console.WriteLine($"keyVaultName: {keyVaultName}");
+
             if (!string.IsNullOrEmpty(keyVaultName))
             {
                 builder.ConfigurationBuilder.AddAzureKeyVault(
