@@ -80,7 +80,7 @@ resource webAppName_appsettings 'Microsoft.Web/sites/config@2021-03-01' = {
   parent: webApp
   name: 'appsettings'
   properties: {
-    KeyVaultNameFromDeployment: keyVaultName
+    KeyVaultNameFromDeployment: keyVault.name
   }
 }
 
@@ -105,6 +105,16 @@ resource keyVault 'Microsoft.KeyVault/vaults@2021-10-01' = {
       {
         tenantId: webApp.identity.tenantId
         objectId: webApp.identity.principalId
+        permissions: {
+          secrets: [
+            'get'
+            'list'
+          ]
+        }
+      }
+      {
+        tenantId: functionsApp.identity.tenantId
+        objectId: functionsApp.identity.principalId
         permissions: {
           secrets: [
             'get'
@@ -149,6 +159,9 @@ resource keyVaultName_additionalSecrets_items_name 'Microsoft.KeyVault/vaults/se
 resource functionsApp 'Microsoft.Web/sites@2021-03-01' = {
   name: functionsAppName
   location: location
+  identity: {
+    type: 'SystemAssigned'
+  }
   kind: 'functionapp,linux'
   properties: {
     serverFarmId: appServicePlan.id
@@ -165,7 +178,11 @@ resource functionsApp 'Microsoft.Web/sites@2021-03-01' = {
         }
         {
           name: 'FUNCTIONS_EXTENSION_VERSION'
-          value: '~3'
+          value: '~4'
+        }
+        {
+          name: 'KeyVaultNameFromDeployment'
+          value: keyVaultName
         }
       ]
     }

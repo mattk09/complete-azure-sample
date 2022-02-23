@@ -1,4 +1,4 @@
-name: dotnet build
+name: dotnet build and deploy
 
 on:
   workflow_dispatch:
@@ -47,22 +47,22 @@ jobs:
       run: dotnet test --no-build --verbosity normal --settings coverlet.runsettings.xml
 
     - name: Publish WebApi
-      if: success() && env.IS_MAIN_PUSH == 'true'
+      if: success() && (env.IS_MAIN_PUSH == 'true' || github.event_name == 'workflow_dispatch')
       run: dotnet publish src/Sample.WebApi/Sample.WebApi.csproj --configuration ${{ env.BUILD_CONFIGURATION }} --output published/Sample.WebApi
 
     - name: Upload WebApi Build Artifact
-      if: success() && env.IS_MAIN_PUSH == 'true'
+      if: success() && (env.IS_MAIN_PUSH == 'true' || github.event_name == 'workflow_dispatch')
       uses: actions/upload-artifact@v2
       with:
         name: Sample.WebApi
         path: published/Sample.WebApi
 
     - name: Publish Functions
-      if: success() && env.IS_MAIN_PUSH == 'true'
+      if: success() && (env.IS_MAIN_PUSH == 'true' || github.event_name == 'workflow_dispatch')
       run: dotnet publish src/Sample.Functions/Sample.Functions.csproj --configuration ${{ env.BUILD_CONFIGURATION }} --output published/Sample.Functions
 
     - name: Upload Functions Build Artifact
-      if: success() && env.IS_MAIN_PUSH == 'true'
+      if: success() && (env.IS_MAIN_PUSH == 'true' || github.event_name == 'workflow_dispatch')
       uses: actions/upload-artifact@v2
       with:
         name: Sample.Functions
@@ -106,7 +106,7 @@ jobs:
         az account show
         echo "AZURE_SUBSCRIPTION_ID=$(az account show --query "id" --output tsv)" >> $GITHUB_ENV
 
-    - name: Create Azure Resource Group 
+    - name: Create Azure Resource Group
       uses: Azure/CLI@v1
       with:
         inlineScript: |
