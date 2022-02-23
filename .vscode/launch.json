@@ -10,6 +10,7 @@
             "args": [],
             "cwd": "${workspaceFolder}/src/Sample.WebApi/bin/Debug/net6.0",
             "stopAtEntry": false,
+            "justMyCode": false,
             "launchBrowser": {
                 "enabled": true,
                 "args": "${auto-detect-url}/weatherforecast"
@@ -22,6 +23,13 @@
             "env": {
                 "ASPNETCORE_ENVIRONMENT": "Development"
             }
+        },
+        {
+          "name": "Attach to .NET Functions",
+          "type": "coreclr",
+          "request": "attach",
+          "processId": "${command:azureFunctions.pickProcess}",
+          "justMyCode": false
         }
     ]
 }
