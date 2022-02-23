@@ -127,9 +127,21 @@ resource keyVault 'Microsoft.KeyVault/vaults@2021-10-01' = {
   }
 }
 
+// WebApi and Functions expect different names for AI key
 resource keyVaultName_ApplicationInsights_InstrumentationKey 'Microsoft.KeyVault/vaults/secrets@2021-10-01' = {
   parent: keyVault
   name: 'ApplicationInsights--InstrumentationKey'
+  properties: {
+    value: appInsights.properties.InstrumentationKey
+    attributes: {
+      enabled: true
+    }
+  }
+}
+
+resource keyVaultName_ApplicationInsights_InstrumentationKey_Functions 'Microsoft.KeyVault/vaults/secrets@2021-10-01' = {
+  parent: keyVault
+  name: 'APPINSIGHTS_INSTRUMENTATIONKEY'
   properties: {
     value: appInsights.properties.InstrumentationKey
     attributes: {
