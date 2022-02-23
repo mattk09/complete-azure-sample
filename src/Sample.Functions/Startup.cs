@@ -1,7 +1,7 @@
 using System;
+using Azure.Identity;
 using Microsoft.Azure.Functions.Extensions.DependencyInjection;
 using Microsoft.Extensions.Configuration;
-using Azure.Identity;
 
 [assembly: FunctionsStartup(typeof(Sample.Functions.Startup))]
 
