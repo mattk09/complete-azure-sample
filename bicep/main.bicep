@@ -1,4 +1,5 @@
 param name string = resourceGroup().name
+param developerObjectIdKeyVaultAccessPolicy string = ''
 param location string = resourceGroup().location
 
 @description('Additional secrets to inject into the keyVault')
@@ -93,6 +94,41 @@ resource appInsights 'Microsoft.Insights/components@2020-02-02' = {
   }
 }
 
+var devAccessPolicy = {
+  tenantId: subscription().tenantId
+  objectId: developerObjectIdKeyVaultAccessPolicy
+  permissions: {
+    secrets: [
+      'get'
+      'list'
+    ]
+  }
+}
+
+var webAppAccessPolicy = {
+  tenantId: webApp.identity.tenantId
+  objectId: webApp.identity.principalId
+  permissions: {
+    secrets: [
+      'get'
+      'list'
+    ]
+  }
+}
+
+var functionsAccessPolicy = {
+  tenantId: functionsApp.identity.tenantId
+  objectId: functionsApp.identity.principalId
+  permissions: {
+    secrets: [
+      'get'
+      'set'
+      'list'
+      'delete'
+    ]
+  }
+}
+
 resource keyVault 'Microsoft.KeyVault/vaults@2021-10-01' = {
   name: keyVaultName
   location: location
@@ -101,28 +137,12 @@ resource keyVault 'Microsoft.KeyVault/vaults@2021-10-01' = {
     enabledForDeployment: false
     enabledForTemplateDeployment: true
     enabledForDiskEncryption: false
-    accessPolicies: [
-      {
-        tenantId: webApp.identity.tenantId
-        objectId: webApp.identity.principalId
-        permissions: {
-          secrets: [
-            'get'
-            'list'
-          ]
-        }
-      }
-      {
-        tenantId: functionsApp.identity.tenantId
-        objectId: functionsApp.identity.principalId
-        permissions: {
-          secrets: [
-            'get'
-            'list'
-          ]
-        }
-      }
-    ]
+    enableSoftDelete: false
+    accessPolicies: skip([
+      devAccessPolicy
+      webAppAccessPolicy
+      functionsAccessPolicy
+    ], empty(developerObjectIdKeyVaultAccessPolicy) ? 1 : 0)
     sku: keyVaultSku
   }
 }
@@ -141,7 +161,7 @@ resource keyVaultName_ApplicationInsights_InstrumentationKey 'Microsoft.KeyVault
 
 resource keyVaultName_ApplicationInsights_InstrumentationKey_Functions 'Microsoft.KeyVault/vaults/secrets@2021-10-01' = {
   parent: keyVault
-  name: 'APPINSIGHTS_INSTRUMENTATIONKEY'
+  name: 'APPINSIGHTS--INSTRUMENTATIONKEY'
   properties: {
     value: appInsights.properties.InstrumentationKey
     attributes: {
@@ -195,6 +215,14 @@ resource functionsApp 'Microsoft.Web/sites@2021-03-01' = {
         {
           name: 'KeyVaultNameFromDeployment'
           value: keyVaultName
+        }
+        {
+          name: 'AzureWebJobsSecretStorageType'
+          value: 'keyvault'
+        }
+        {
+          name: 'AzureWebJobsSecretStorageKeyVaultUri'
+          value: 'https://${keyVaultName}${environment().suffixes.keyvaultDns}/'
         }
       ]
     }

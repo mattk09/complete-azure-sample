@@ -38,5 +38,17 @@ namespace Sample.Functions
 
             return new OkObjectResult(responseMessage);
         }
+
+        [FunctionName("HelloWorldSecure")]
+        public async Task<IActionResult> RunSecureAsync(
+            [HttpTrigger(AuthorizationLevel.Function, "get", "post", Route = null)] HttpRequest request,
+            ILogger log)
+        {
+            log.LogInformation("C# HTTP trigger function processed a secure request.");
+
+            await Task.CompletedTask;
+
+            return new OkObjectResult("Secured");
+        }
     }
 }

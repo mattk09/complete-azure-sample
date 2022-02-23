@@ -120,7 +120,9 @@ jobs:
         resourceGroupName: ${{ env.AZURE_RESOURCE_GROUP_NAME }}
         template: ./bicep/main.bicep
         failOnStdErr: false
-        parameters: additionalSecrets="${{ env.ADDITIONAL_KEY_VAULT_SECRETS }}"
+        parameters: >-
+          additionalSecrets="${{ env.ADDITIONAL_KEY_VAULT_SECRETS }}"
+          developerObjectIdKeyVaultAccessPolicy="${{ secrets.AZURE_DEVELOPER_OBJECT_ID }}"
 
     - name: Deploy Sample.WebApi
       uses: azure/webapps-deploy@v2
