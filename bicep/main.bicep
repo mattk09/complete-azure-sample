@@ -77,7 +77,7 @@ resource webApp 'Microsoft.Web/sites@2021-03-01' = {
   }
 }
 
-resource webAppName_appsettings 'Microsoft.Web/sites/config@2021-03-01' = {
+resource webApp_appsettings 'Microsoft.Web/sites/config@2021-03-01' = {
   parent: webApp
   name: 'appsettings'
   properties: {
@@ -148,7 +148,7 @@ resource keyVault 'Microsoft.KeyVault/vaults@2021-10-01' = {
 }
 
 // WebApi and Functions expect different names for AI key
-resource keyVaultName_ApplicationInsights_InstrumentationKey 'Microsoft.KeyVault/vaults/secrets@2021-10-01' = {
+resource keyVault_ApplicationInsights_InstrumentationKey 'Microsoft.KeyVault/vaults/secrets@2021-10-01' = {
   parent: keyVault
   name: 'ApplicationInsights--InstrumentationKey'
   properties: {
@@ -159,18 +159,7 @@ resource keyVaultName_ApplicationInsights_InstrumentationKey 'Microsoft.KeyVault
   }
 }
 
-resource keyVaultName_ApplicationInsights_InstrumentationKey_Functions 'Microsoft.KeyVault/vaults/secrets@2021-10-01' = {
-  parent: keyVault
-  name: 'APPINSIGHTS--INSTRUMENTATIONKEY'
-  properties: {
-    value: appInsights.properties.InstrumentationKey
-    attributes: {
-      enabled: true
-    }
-  }
-}
-
-resource keyVaultName_AzureStorageSettings_ConnectionString 'Microsoft.KeyVault/vaults/secrets@2021-10-01' = {
+resource keyVault_AzureStorageSettings_ConnectionString 'Microsoft.KeyVault/vaults/secrets@2021-10-01' = {
   parent: keyVault
   name: 'AzureStorageSettings--ConnectionString'
   properties: {
@@ -181,7 +170,7 @@ resource keyVaultName_AzureStorageSettings_ConnectionString 'Microsoft.KeyVault/
   }
 }
 
-resource keyVaultName_additionalSecrets_items_name 'Microsoft.KeyVault/vaults/secrets@2021-10-01' = [for i in range(0, length(additionalSecrets.items)): {
+resource keyVault_additionalSecrets_items 'Microsoft.KeyVault/vaults/secrets@2021-10-01' = [for i in range(0, length(additionalSecrets.items)): {
   name: '${keyVault.name}/${additionalSecrets.items[i].name}'
   properties: {
     value: additionalSecrets.items[i].secret
@@ -200,6 +189,11 @@ resource functionsApp 'Microsoft.Web/sites@2021-03-01' = {
     reserved: true
     siteConfig: {
       appSettings: [
+        {
+          // I would prefer this comes from KeyVault, but the functions runtime consumes this before KV can be applied right now
+          name: 'APPINSIGHTS_INSTRUMENTATIONKEY'
+          value: appInsights.properties.InstrumentationKey
+        }
         {
           name: 'AzureWebJobsStorage'
           value: storageAccountConnectionString
@@ -231,6 +225,6 @@ resource functionsApp 'Microsoft.Web/sites@2021-03-01' = {
 
 output result object = {
   storageEndpoint: storageAccount.properties.primaryEndpoints
-  webAppName: webAppName
-  functionsAppName: functionsAppName
+  webAppName: webApp.name
+  functionsAppName: functionsApp.name
 }
