@@ -1,17 +1,19 @@
+@description('Base name of all resourcs (invalid characters will be stripped when required).')
 param name string = resourceGroup().name
+
+@description('Optional objectId to grant an identity access to the key vault.')
 param developerObjectIdKeyVaultAccessPolicy string = ''
+
+@description('Location of all resources.')
 param location string = resourceGroup().location
 
-@description('Additional secrets to inject into the keyVault')
-@secure()
-param additionalSecrets object = {
-  items: [
-    {
-      name: 'example-secret-guid'
-      secret: newGuid()
-    }
-  ]
-}
+@description('Additional secrets to inject into the keyVault.')
+param additionalSecrets array = [
+  {
+    name: 'example-secret-guid'
+    secret: newGuid()
+  }
+]
 
 @allowed([
   'Standard_LRS'
@@ -129,53 +131,28 @@ var functionsAccessPolicy = {
   }
 }
 
-resource keyVault 'Microsoft.KeyVault/vaults@2021-10-01' = {
-  name: keyVaultName
-  location: location
-  properties: {
-    tenantId: subscription().tenantId
-    enabledForDeployment: false
-    enabledForTemplateDeployment: true
-    enabledForDiskEncryption: false
-    enableSoftDelete: false
-    accessPolicies: skip([
+module keyVault 'modules/key-vault.bicep' = {
+  name: name
+  params: {
+    name: name
+    location: location
+    additionalSecrets: concat([
+      {
+        name: 'AzureStorageSettings--ConnectionString'
+        secret: storageAccountConnectionString
+      }
+      {
+        name: 'ApplicationInsights--InstrumentationKey'
+        secret: appInsights.properties.InstrumentationKey
+      }
+    ], additionalSecrets)
+    additionalAccessPolicies: skip([
       devAccessPolicy
       webAppAccessPolicy
       functionsAccessPolicy
     ], empty(developerObjectIdKeyVaultAccessPolicy) ? 1 : 0)
-    sku: keyVaultSku
   }
 }
-
-// WebApi and Functions expect different names for AI key
-resource keyVault_ApplicationInsights_InstrumentationKey 'Microsoft.KeyVault/vaults/secrets@2021-10-01' = {
-  parent: keyVault
-  name: 'ApplicationInsights--InstrumentationKey'
-  properties: {
-    value: appInsights.properties.InstrumentationKey
-    attributes: {
-      enabled: true
-    }
-  }
-}
-
-resource keyVault_AzureStorageSettings_ConnectionString 'Microsoft.KeyVault/vaults/secrets@2021-10-01' = {
-  parent: keyVault
-  name: 'AzureStorageSettings--ConnectionString'
-  properties: {
-    value: storageAccountConnectionString
-    attributes: {
-      enabled: true
-    }
-  }
-}
-
-resource keyVault_additionalSecrets_items 'Microsoft.KeyVault/vaults/secrets@2021-10-01' = [for i in range(0, length(additionalSecrets.items)): {
-  name: '${keyVault.name}/${additionalSecrets.items[i].name}'
-  properties: {
-    value: additionalSecrets.items[i].secret
-  }
-}]
 
 resource functionsApp 'Microsoft.Web/sites@2021-03-01' = {
   name: functionsAppName
