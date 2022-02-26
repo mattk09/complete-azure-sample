@@ -1,10 +1,10 @@
-@description('Name of the key vault (invalid characters will be stripped).')
+@description('Name of the key vault (must be valid).')
 param name string = resourceGroup().name
 
 @description('Location of the key vault.')
 param location string = resourceGroup().location
 
-@description('Additional secrets to inject into the keyVault.')
+@description('Additional secrets to inject into the key vault.')
 param additionalSecrets array = [
   {
     name: 'example-secret-guid'
@@ -46,3 +46,5 @@ resource keyVault_additionalSecrets_items 'Microsoft.KeyVault/vaults/secrets@202
     value: additionalSecrets[i].secret
   }
 }]
+
+output keyVaultName string = keyVault.name

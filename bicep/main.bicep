@@ -7,7 +7,7 @@ param developerObjectIdKeyVaultAccessPolicy string = ''
 @description('Location of all resources.')
 param location string = resourceGroup().location
 
-@description('Additional secrets to inject into the keyVault.')
+@description('Additional secrets to inject into the key vault.')
 param additionalSecrets array = [
   {
     name: 'example-secret-guid'
@@ -36,10 +36,6 @@ var storageAccountName = toLower(take(replace(replace(name, '-', ''), '_', ''), 
 var appInsightsName = name
 var functionsAppName = '${name}-functions'
 var keyVaultName = toLower(take(replace(name, '_', ''), 24))
-var keyVaultSku = {
-  family: 'A'
-  name: 'standard'
-}
 
 resource storageAccount 'Microsoft.Storage/storageAccounts@2021-04-01' = {
   name: storageAccountName
@@ -132,9 +128,9 @@ var functionsAccessPolicy = {
 }
 
 module keyVault 'modules/key-vault.bicep' = {
-  name: name
+  name: keyVaultName
   params: {
-    name: name
+    name: keyVaultName
     location: location
     additionalSecrets: concat([
       {
