@@ -47,6 +47,7 @@ jobs:
         mkdir keys
         ssh-keygen -m PEM -t rsa -b 4096 -N '' -f ./keys/ssh.pem
 
+        chmod 400 ./keys/ssh.pem.pub
         echo "SSH_PEM_PUB='$(./keys/ssh.pem.pub)'" >> $GITHUB_ENV
 
         # echo "SSH_PEM='$(cat ./keys/ssh.pem)'" >> $GITHUB_ENV
@@ -58,6 +59,12 @@ jobs:
 
     - name: Deploy bicep 💪
       uses: azure/arm-deploy@v1
+      env:
+        ADDITIONAL_KEY_VAULT_SECRETS: >-
+          [
+              {"sshPrivate": "Sample--Secret", "secret": "Sample-Secret" }
+              {"sshPublic": "Sample--Secret", "secret": "Sample-Secret" }
+          ]
       with:
         subscriptionId: ${{ env.AZURE_SUBSCRIPTION_ID }}
         resourceGroupName: ${{ env.AZURE_RESOURCE_GROUP_NAME }}
@@ -65,8 +72,7 @@ jobs:
         failOnStdErr: false
         parameters: >-
           developerObjectIdKeyVaultAccessPolicy="${{ secrets.AZURE_DEVELOPER_OBJECT_ID }}"
-          sshPrivate="${{ env.SSH_PEM }}"
-          sshPublic="${{ env.SSH_PEM_PUB }}"
+          additionalSecrets=${{ env.ADDITIONAL_KEY_VAULT_SECRETS }}
 
 
     - name: Last step diagnostics
