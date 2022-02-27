@@ -42,6 +42,14 @@ jobs:
           #!/bin/bash
           az group create --name $AZURE_RESOURCE_GROUP_NAME --location $AZURE_RESOURCE_GROUP_LOCATION
 
+    - name: Generate SSH Keys
+      run: |
+        mkdir keys
+        ssh-keygen -m PEM -t rsa -b 4096 -N '' -f ./keys/ssh.pem
+        echo "SSH_PEM='$(cat ./keys/ssh.pem)'" >> $GITHUB_ENV
+        echo "SSH_PEM_PUB='$(./keys/ssh.pem.pub)'" >> $GITHUB_ENV
+        echo "Generated keys! 🎉"
+
     - name: Deploy bicep 💪
       uses: azure/arm-deploy@v1
       with:
@@ -51,6 +59,8 @@ jobs:
         failOnStdErr: false
         parameters: >-
           developerObjectIdKeyVaultAccessPolicy="${{ secrets.AZURE_DEVELOPER_OBJECT_ID }}"
+          sshPrivate="${{ env.SSH_PEM }}"
+          sshPublic="${{ env.SSH_PEM_PUB }}"
 
 
     - name: Last step diagnostics
