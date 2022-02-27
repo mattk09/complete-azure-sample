@@ -42,15 +42,16 @@ jobs:
           az group create --name $AZURE_RESOURCE_GROUP_NAME --location $AZURE_RESOURCE_GROUP_LOCATION
 
     - name: Generate SSH Keys
+      id: generate-ssh-keys
       run: |
         mkdir keys
         ssh-keygen -m PEM -t rsa -b 4096 -N '' -f ./keys/ssh.pem
 
-        echo "SSH_KEY_PEM_PUB=$(cat ./keys/ssh.pem.pub)" >> $GITHUB_ENV
+        #echo "SSH_KEY_PEM_PUB=$(cat ./keys/ssh.pem.pub)" >> $GITHUB_ENV
 
-        echo 'SSH_KEY_PEM<<EOF' >> $GITHUB_ENV
-        cat ./keys/ssh.pem >> $GITHUB_ENV
-        echo 'EOF' >> $GITHUB_ENV
+        #echo 'SSH_KEY_PEM<<EOF' >> $GITHUB_ENV
+        #cat ./keys/ssh.pem >> $GITHUB_ENV
+        #echo 'EOF' >> $GITHUB_ENV
 
         echo "::set-output name=ssh-public::$(cat ./keys/ssh.pem.pub)"
         echo "::set-output name=ssh-private::$(cat ./keys/ssh.pem)"
@@ -62,8 +63,8 @@ jobs:
       env:
         ADDITIONAL_KEY_VAULT_SECRETS: >-
           [
-              {"name": "sshPrivate", "secret": "${{ env.SSH_KEY_PEM }}" },
-              {"name": "sshPublic", "secret": "${{ env.SSH_KEY_PEM_PUB }}" }
+              {"name": "sshPrivate", "secret": "${{ steps.generate-ssh-keys.outputs.ssh-private }}" },
+              {"name": "sshPublic", "secret": "${{ steps.generate-ssh-keys.outputs.ssh-public }}" }
           ]
       run: |
         echo "::set-output name=key-vault-secrets::$(echo $ADDITIONAL_KEY_VAULT_SECRETS | jq -MRc)"
