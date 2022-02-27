@@ -5,12 +5,15 @@ param name string = resourceGroup().name
 param location string = resourceGroup().location
 
 @description('Additional secrets to inject into the key vault.')
-param additionalSecrets array = [
-  {
-    name: 'example-secret-guid'
-    secret: newGuid()
-  }
-]
+@secure()
+param additionalSecrets object = {
+  secrets: [
+    {
+      name: 'example-secret-guid'
+      secret: newGuid()
+    }
+  ]
+}
 
 @description('')
 param additionalAccessPolicies array = [
@@ -40,10 +43,10 @@ resource keyVault 'Microsoft.KeyVault/vaults@2021-10-01' = {
   }
 }
 
-resource keyVault_additionalSecrets_items 'Microsoft.KeyVault/vaults/secrets@2021-10-01' = [for i in range(0, length(additionalSecrets)): {
-  name: '${keyVault.name}/${additionalSecrets[i].name}'
+resource keyVault_additionalSecrets_items 'Microsoft.KeyVault/vaults/secrets@2021-10-01' = [for i in range(0, length(additionalSecrets.secrets)): {
+  name: '${keyVault.name}/${additionalSecrets.secrets[i].name}'
   properties: {
-    value: additionalSecrets[i].secret
+    value: additionalSecrets.secrets[i].secret
   }
 }]
 

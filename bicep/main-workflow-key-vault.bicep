@@ -8,12 +8,15 @@ param developerObjectIdKeyVaultAccessPolicy string = ''
 param location string = resourceGroup().location
 
 @description('Additional secrets to inject into the key vault.')
-param additionalSecrets array = [
-  {
-    name: 'example-secret-guid'
-    secret: newGuid()
-  }
-]
+@secure()
+param additionalSecrets object = {
+  secrets: [
+    {
+      name: 'example-secret-guid'
+      secret: newGuid()
+    }
+  ]
+}
 
 var devAccessPolicy = {
   tenantId: subscription().tenantId
@@ -33,8 +36,7 @@ module keyVault 'modules/key-vault.bicep' = {
   params: {
     name: name
     location: location
-    additionalSecrets: concat([
-    ], additionalSecrets)
+    additionalSecrets: additionalSecrets
     additionalAccessPolicies: skip([
       devAccessPolicy
     ], empty(developerObjectIdKeyVaultAccessPolicy) ? 1 : 0)

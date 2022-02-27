@@ -8,12 +8,15 @@ param developerObjectIdKeyVaultAccessPolicy string = ''
 param location string = resourceGroup().location
 
 @description('Additional secrets to inject into the key vault.')
-param additionalSecrets array = [
-  {
-    name: 'example-secret-guid'
-    secret: newGuid()
-  }
-]
+@secure()
+param additionalSecrets object = {
+  secrets: [
+    {
+      name: 'example-secret-guid'
+      secret: newGuid()
+    }
+  ]
+}
 
 @allowed([
   'Standard_LRS'
@@ -132,16 +135,18 @@ module keyVault 'modules/key-vault.bicep' = {
   params: {
     name: keyVaultName
     location: location
-    additionalSecrets: concat([
-      {
-        name: 'AzureStorageSettings--ConnectionString'
-        secret: storageAccountConnectionString
-      }
-      {
-        name: 'ApplicationInsights--InstrumentationKey'
-        secret: appInsights.properties.InstrumentationKey
-      }
-    ], additionalSecrets)
+    additionalSecrets: {
+      secrets: concat([
+        {
+          name: 'AzureStorageSettings--ConnectionString'
+          secret: storageAccountConnectionString
+        }
+        {
+          name: 'ApplicationInsights--InstrumentationKey'
+          secret: appInsights.properties.InstrumentationKey
+        }
+      ], additionalSecrets.secrets)
+    }
     additionalAccessPolicies: skip([
       devAccessPolicy
       webAppAccessPolicy
