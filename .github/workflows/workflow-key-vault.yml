@@ -47,7 +47,7 @@ jobs:
         mkdir keys
         ssh-keygen -m PEM -t rsa -b 4096 -N '' -f ./keys/ssh.pem
 
-        chmod 400 ./keys/ssh.pem.pub
+        sudo chmod 400 ./keys/ssh.pem.pub
         echo "SSH_PEM_PUB='$(./keys/ssh.pem.pub)'" >> $GITHUB_ENV
 
         # echo "SSH_PEM='$(cat ./keys/ssh.pem)'" >> $GITHUB_ENV
@@ -57,14 +57,19 @@ jobs:
 
         echo "Generated keys! 🎉"
 
-    - name: Deploy bicep 💪
-      uses: azure/arm-deploy@v1
+    - name: Prepare secrets for key vault
+      id: prepare-secrets
       env:
         ADDITIONAL_KEY_VAULT_SECRETS: >-
           [
               {"sshPrivate": "Sample--Secret", "secret": "Sample-Secret" }
               {"sshPublic": "Sample--Secret", "secret": "Sample-Secret" }
           ]
+      run: |
+        echo "::set-output name=key-vault-secrets::$(echo $ADDITIONAL_KEY_VAULT_SECRETS | jq -MRc)"
+
+    - name: Deploy bicep 💪
+      uses: azure/arm-deploy@v1
       with:
         subscriptionId: ${{ env.AZURE_SUBSCRIPTION_ID }}
         resourceGroupName: ${{ env.AZURE_RESOURCE_GROUP_NAME }}
@@ -72,7 +77,7 @@ jobs:
         failOnStdErr: false
         parameters: >-
           developerObjectIdKeyVaultAccessPolicy="${{ secrets.AZURE_DEVELOPER_OBJECT_ID }}"
-          additionalSecrets=${{ env.ADDITIONAL_KEY_VAULT_SECRETS }}
+          additionalSecrets=${{ steps.prepare-secrets.outputs.key-vault-secrets }}
 
 
     - name: Last step diagnostics
