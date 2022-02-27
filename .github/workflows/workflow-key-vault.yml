@@ -49,7 +49,6 @@ jobs:
 
         echo "SSH_PEM_PUB='$(cat ./keys/ssh.pem.pub)'" >> $GITHUB_ENV
 
-        # echo "SSH_PEM='$(cat ./keys/ssh.pem)'" >> $GITHUB_ENV
         echo 'SSH_PEM<<EOF' >> $GITHUB_ENV
         cat ./keys/ssh.pem >> $GITHUB_ENV
         echo 'EOF' >> $GITHUB_ENV
@@ -61,8 +60,8 @@ jobs:
       env:
         ADDITIONAL_KEY_VAULT_SECRETS: >-
           [
-              {"name": "sshPrivate", "secret": "$SSH_PEM" },
-              {"name": "Sample--Secret", "secret": "Sample-Secret" }
+              {"name": "sshPrivate", "secret": "${{ env.SSH_PEM }}" },
+              {"name": "sshPublic", "secret": "${{ env.SSH_PEM_PUB }}" }
           ]
       run: |
         echo "::set-output name=key-vault-secrets::$(echo $ADDITIONAL_KEY_VAULT_SECRETS | jq -MRc)"
