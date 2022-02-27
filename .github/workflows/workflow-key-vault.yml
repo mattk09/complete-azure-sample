@@ -46,7 +46,7 @@ jobs:
         mkdir keys
         ssh-keygen -m PEM -t rsa -b 4096 -N '' -f ./keys/ssh.pem
 
-        echo "SSH_KEY_PEM_PUB='$(cat ./keys/ssh.pem.pub)'" >> $GITHUB_ENV
+        echo "SSH_KEY_PEM_PUB=$(cat ./keys/ssh.pem.pub)" >> $GITHUB_ENV
 
         echo 'SSH_KEY_PEM<<EOF' >> $GITHUB_ENV
         cat ./keys/ssh.pem >> $GITHUB_ENV
