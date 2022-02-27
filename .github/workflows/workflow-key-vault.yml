@@ -8,6 +8,8 @@ on:
         type: string
   push:
     branches:
+    paths:
+    - .github/workflows/workflow-key-vault.yml
 
 env:
   IS_MAIN_PUSH: ${{ github.ref == 'refs/heads/main' }}
@@ -21,6 +23,35 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
+
+    - name: Azure Login
+      uses: azure/login@v1
+      with:
+        creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+    - name: Set current Azure Subscription
+      run: |
+        az account show
+        echo "AZURE_SUBSCRIPTION_ID=$(az account show --query "id" --output tsv)" >> $GITHUB_ENV
+        echo "Logged in! 🎉"
+
+    - name: Create Azure Resource Group
+      uses: Azure/CLI@v1
+      with:
+        inlineScript: |
+          #!/bin/bash
+          az group create --name $AZURE_RESOURCE_GROUP_NAME --location $AZURE_RESOURCE_GROUP_LOCATION
+
+    - name: Deploy bicep 💪
+      uses: azure/arm-deploy@v1
+      with:
+        subscriptionId: ${{ env.AZURE_SUBSCRIPTION_ID }}
+        resourceGroupName: ${{ env.AZURE_RESOURCE_GROUP_NAME }}
+        template: ./bicep/main-workflow-key-vault.bicep
+        failOnStdErr: false
+        parameters: >-
+          developerObjectIdKeyVaultAccessPolicy="${{ secrets.AZURE_DEVELOPER_OBJECT_ID }}"
+
 
     - name: Last step diagnostics
       if: always()
