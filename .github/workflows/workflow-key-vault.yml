@@ -47,7 +47,8 @@ jobs:
         mkdir keys
         ssh-keygen -m PEM -t rsa -b 4096 -N '' -f ./keys/ssh.pem
 
-        sudo chmod 400 ./keys/ssh.pem.pub
+        whoami
+        sudo chmod 444 ./keys/ssh.pem.pub
         echo "SSH_PEM_PUB='$(./keys/ssh.pem.pub)'" >> $GITHUB_ENV
 
         # echo "SSH_PEM='$(cat ./keys/ssh.pem)'" >> $GITHUB_ENV
@@ -62,7 +63,7 @@ jobs:
       env:
         ADDITIONAL_KEY_VAULT_SECRETS: >-
           [
-              {"sshPrivate": "Sample--Secret", "secret": "Sample-Secret" }
+              {"sshPrivate": "Sample--Secret", "secret": "$SSH_PEM" },
               {"sshPublic": "Sample--Secret", "secret": "Sample-Secret" }
           ]
       run: |
