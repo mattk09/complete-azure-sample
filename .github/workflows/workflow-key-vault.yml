@@ -46,8 +46,14 @@ jobs:
       run: |
         mkdir keys
         ssh-keygen -m PEM -t rsa -b 4096 -N '' -f ./keys/ssh.pem
-        echo "SSH_PEM='$(cat ./keys/ssh.pem)'" >> $GITHUB_ENV
+
         echo "SSH_PEM_PUB='$(./keys/ssh.pem.pub)'" >> $GITHUB_ENV
+
+        # echo "SSH_PEM='$(cat ./keys/ssh.pem)'" >> $GITHUB_ENV
+        echo 'SSH_PEM<<EOF' >> $GITHUB_ENV
+        cat ./keys/ssh.pem >> $GITHUB_ENV
+        echo 'EOF' >> $GITHUB_ENV
+
         echo "Generated keys! 🎉"
 
     - name: Deploy bicep 💪
