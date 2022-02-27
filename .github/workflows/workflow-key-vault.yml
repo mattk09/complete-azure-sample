@@ -52,6 +52,9 @@ jobs:
         cat ./keys/ssh.pem >> $GITHUB_ENV
         echo 'EOF' >> $GITHUB_ENV
 
+        echo "::set-output name=ssh-public::$(cat ./keys/ssh.pem.pub)"
+        echo "::set-output name=ssh-private::$(cat ./keys/ssh.pem)"
+
         echo "Generated keys! 🎉"
 
     - name: Prepare secrets for key vault
