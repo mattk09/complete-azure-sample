@@ -12,8 +12,7 @@ on:
     - .github/workflows/workflow-key-vault.yml
 
 env:
-  IS_MAIN_PUSH: ${{ github.ref == 'refs/heads/main' }}
-  AZURE_RESOURCE_GROUP_NAME: ${{ github.event.inputs.resource-group-name || 'mattk09-workflow-centralus' }}
+  AZURE_RESOURCE_GROUP_NAME: ${{ github.event.inputs.resource-group-name || 'mattk09-workflow' }}
   AZURE_RESOURCE_GROUP_LOCATION: centralus
 
 jobs:
@@ -47,9 +46,9 @@ jobs:
         mkdir keys
         ssh-keygen -m PEM -t rsa -b 4096 -N '' -f ./keys/ssh.pem
 
-        echo "SSH_PEM_PUB='$(cat ./keys/ssh.pem.pub)'" >> $GITHUB_ENV
+        echo "SSH_KEY_PEM_PUB='$(cat ./keys/ssh.pem.pub)'" >> $GITHUB_ENV
 
-        echo 'SSH_PEM<<EOF' >> $GITHUB_ENV
+        echo 'SSH_KEY_PEM<<EOF' >> $GITHUB_ENV
         cat ./keys/ssh.pem >> $GITHUB_ENV
         echo 'EOF' >> $GITHUB_ENV
 
@@ -60,8 +59,8 @@ jobs:
       env:
         ADDITIONAL_KEY_VAULT_SECRETS: >-
           [
-              {"name": "sshPrivate", "secret": "${{ env.SSH_PEM }}" },
-              {"name": "sshPublic", "secret": "${{ env.SSH_PEM_PUB }}" }
+              {"name": "sshPrivate", "secret": "${{ env.SSH_KEY_PEM }}" },
+              {"name": "sshPublic", "secret": "${{ env.SSH_KEY_PEM_PUB }}" }
           ]
       run: |
         echo "::set-output name=key-vault-secrets::$(echo $ADDITIONAL_KEY_VAULT_SECRETS | jq -MRc)"
