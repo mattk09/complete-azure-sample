@@ -1,0 +1,30 @@
+name: deploy and manage workflow key vault
+
+on:
+  workflow_dispatch:
+    inputs:
+      resource-group-name:
+        required: false
+        type: string
+  push:
+    branches:
+
+env:
+  IS_MAIN_PUSH: ${{ github.ref == 'refs/heads/main' }}
+  AZURE_RESOURCE_GROUP_NAME: ${{ github.event.inputs.resource-group-name || 'mattk09-workflow-centralus' }}
+  AZURE_RESOURCE_GROUP_LOCATION: centralus
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Last step diagnostics
+      if: always()
+      run: |
+        pwd
+        printenv | sort
+        ls -alFR -I.git
