@@ -53,8 +53,10 @@ jobs:
         #cat ./keys/ssh.pem >> $GITHUB_ENV
         #echo 'EOF' >> $GITHUB_ENV
 
+        SSH_PRIVATE=$(cat ./keys/ssh.pem)
+
         echo "::set-output name=ssh-public::$(cat ./keys/ssh.pem.pub)"
-        echo "::set-output name=ssh-private::$(cat ./keys/ssh.pem)"
+        echo "::set-output name=ssh-private::$(echo -e $SSH_PRIVATE)"
 
         echo "Generated keys! 🎉"
 
@@ -62,10 +64,12 @@ jobs:
       id: prepare-secrets
       env:
         ADDITIONAL_KEY_VAULT_SECRETS: >-
-          [
+          {
+            secrets: [
               {"name": "sshPrivate", "secret": "${{ steps.generate-ssh-keys.outputs.ssh-private }}" },
               {"name": "sshPublic", "secret": "${{ steps.generate-ssh-keys.outputs.ssh-public }}" }
-          ]
+            ]
+          }
       run: |
         echo "::set-output name=key-vault-secrets::$(echo $ADDITIONAL_KEY_VAULT_SECRETS | jq -MRc)"
 

@@ -23,9 +23,11 @@ env:
   BUILD_CONFIGURATION: Release
   DOTNET_VERSION: 6.0.x
   ADDITIONAL_KEY_VAULT_SECRETS: >-
-    [
-        {\"name\": \"Sample--Secret\", \"secret\": \"Sample-Secret\" }
-    ]
+    {
+      secrets: [
+          {\"name\": \"Sample--Secret\", \"secret\": \"Sample-Secret\" }
+      ]
+    }
 
 jobs:
   build:
