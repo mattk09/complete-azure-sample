@@ -47,6 +47,46 @@ It is not always easy to see in the code, but this project gains a lot from usin
 - [Naming Conventions][naming]
 - [Secret Management][developer-secret-management] during development
 
+## AZ Cli
+
+```bash
+# Create service principal
+az login --use-device-code
+az account set --subscription <<your preferred subscription>>
+az account show
+
+AZURE_SUBSCRIPTION_ID=$(az account show --query "id" --output tsv)
+az ad sp create-for-rbac \
+    --name "github-actions" \
+    --role contributor \
+    --scopes /subscriptions/$AZURE_SUBSCRIPTION_ID \
+    --sdk-auth
+
+az ad sp list --display-name 'github-actions'
+
+az role definition create --role-definition '{
+        "Name": "Custom Authorization Contributor",
+        "Description": "Ability to assign roles",
+        "Actions": [
+          "Microsoft.Authorization/roleAssignments/write"
+        ],
+        "DataActions": [
+        ],
+        "NotDataActions": [
+        ],
+        "NotActions": [
+          "Microsoft.Authorization/*/Delete"
+        ],
+        "AssignableScopes": ["/subscriptions/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxx"]
+    }'
+
+az role definition list --name "Custom Authorization Contributor"
+
+az ad sp list --display-name 'github-actions' --query "[0].objectId" --output tsv
+
+az role assignment create --assignee $SP_ID --role "Custom Authorization Contributor" 
+```
+
 [naming]: https://docs.microsoft.com/en-us/dotnet/standard/design-guidelines/naming-guidelines
 [developer-secret-management]: https://docs.microsoft.com/en-us/aspnet/core/security/app-secrets?view=aspnetcore-3.1&tabs=windows
 [code-coverage]: https://docs.microsoft.com/en-us/azure/devops/pipelines/ecosystems/dotnet-core?view=azure-devops#collect-code-coverage

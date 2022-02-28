@@ -1,4 +1,4 @@
-@description('Base name of all resourcs (invalid characters will be stripped when required).')
+@description('Base name of all resources (invalid characters will be stripped when required).')
 param name string = resourceGroup().name
 
 @description('Optional objectId to grant an identity access to the key vault.')
@@ -8,12 +8,15 @@ param developerObjectIdKeyVaultAccessPolicy string = ''
 param location string = resourceGroup().location
 
 @description('Additional secrets to inject into the key vault.')
-param additionalSecrets array = [
-  {
-    name: 'example-secret-guid'
-    secret: newGuid()
-  }
-]
+@secure()
+param additionalSecrets object = {
+  secrets: [
+    {
+      name: 'example-secret-guid'
+      secret: newGuid()
+    }
+  ]
+}
 
 @allowed([
   'Standard_LRS'
@@ -93,38 +96,18 @@ resource appInsights 'Microsoft.Insights/components@2020-02-02' = {
 }
 
 var devAccessPolicy = {
-  tenantId: subscription().tenantId
   objectId: developerObjectIdKeyVaultAccessPolicy
-  permissions: {
-    secrets: [
-      'get'
-      'list'
-    ]
-  }
+  principalType: 'User'
 }
 
 var webAppAccessPolicy = {
-  tenantId: webApp.identity.tenantId
   objectId: webApp.identity.principalId
-  permissions: {
-    secrets: [
-      'get'
-      'list'
-    ]
-  }
+  principalType: 'ServicePrincipal'
 }
 
 var functionsAccessPolicy = {
-  tenantId: functionsApp.identity.tenantId
   objectId: functionsApp.identity.principalId
-  permissions: {
-    secrets: [
-      'get'
-      'set'
-      'list'
-      'delete'
-    ]
-  }
+  principalType: 'ServicePrincipal'
 }
 
 module keyVault 'modules/key-vault.bicep' = {
@@ -132,16 +115,18 @@ module keyVault 'modules/key-vault.bicep' = {
   params: {
     name: keyVaultName
     location: location
-    additionalSecrets: concat([
-      {
-        name: 'AzureStorageSettings--ConnectionString'
-        secret: storageAccountConnectionString
-      }
-      {
-        name: 'ApplicationInsights--InstrumentationKey'
-        secret: appInsights.properties.InstrumentationKey
-      }
-    ], additionalSecrets)
+    additionalSecrets: {
+      secrets: concat([
+        {
+          name: 'AzureStorageSettings--ConnectionString'
+          secret: storageAccountConnectionString
+        }
+        {
+          name: 'ApplicationInsights--InstrumentationKey'
+          secret: appInsights.properties.InstrumentationKey
+        }
+      ], additionalSecrets.secrets)
+    }
     additionalAccessPolicies: skip([
       devAccessPolicy
       webAppAccessPolicy

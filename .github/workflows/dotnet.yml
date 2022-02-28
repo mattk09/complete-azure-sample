@@ -8,6 +8,11 @@ on:
         type: string
   push:
     branches:
+    paths:
+    - .github/workflows/dotnet.yml
+    - bicep/main.bicep
+    - bicep/modules/**
+    - src/**
   pull_request:
     branches: [ main ]
 
@@ -18,9 +23,11 @@ env:
   BUILD_CONFIGURATION: Release
   DOTNET_VERSION: 6.0.x
   ADDITIONAL_KEY_VAULT_SECRETS: >-
-    [
-        {\"name\": \"Sample--Secret\", \"secret\": \"Sample-Secret\" }
-    ]
+    {
+      \"secrets\": [
+          {\"name\": \"Sample--Secret\", \"secret\": \"Sample-Secret\" }
+      ]
+    }
 
 jobs:
   build:
@@ -103,6 +110,7 @@ jobs:
       run: |
         az account show
         echo "AZURE_SUBSCRIPTION_ID=$(az account show --query "id" --output tsv)" >> $GITHUB_ENV
+        echo "Logged in! 🎉"
 
     - name: Create Azure Resource Group
       uses: Azure/CLI@v1
@@ -111,7 +119,7 @@ jobs:
           #!/bin/bash
           az group create --name $AZURE_RESOURCE_GROUP_NAME --location $AZURE_RESOURCE_GROUP_LOCATION
 
-    - name: Deploy bicep
+    - name: Deploy bicep 💪
       uses: azure/arm-deploy@v1
       with:
         subscriptionId: ${{ env.AZURE_SUBSCRIPTION_ID }}

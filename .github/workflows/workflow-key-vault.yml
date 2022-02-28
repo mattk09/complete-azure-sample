@@ -1,0 +1,97 @@
+name: deploy and manage workflow key vault
+
+on:
+  workflow_dispatch:
+    inputs:
+      resource-group-name:
+        required: false
+        type: string
+  push:
+    branches:
+    paths:
+    - .github/workflows/workflow-key-vault.yml
+
+env:
+  AZURE_RESOURCE_GROUP_NAME: ${{ github.event.inputs.resource-group-name || 'mattk09-workflow' }}
+  AZURE_RESOURCE_GROUP_LOCATION: centralus
+
+jobs:
+  generate-and-deploy:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Azure Login
+      uses: azure/login@v1
+      with:
+        creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+    - name: Set current Azure Subscription
+      run: |
+        az account show
+        echo "AZURE_SUBSCRIPTION_ID=$(az account show --query "id" --output tsv)" >> $GITHUB_ENV
+        echo "Logged in! 🎉"
+
+    - name: Create Azure Resource Group
+      uses: Azure/CLI@v1
+      with:
+        inlineScript: |
+          #!/bin/bash
+          az group create --name $AZURE_RESOURCE_GROUP_NAME --location $AZURE_RESOURCE_GROUP_LOCATION
+
+    - name: Generate SSH Keys
+      id: generate-ssh-keys
+      run: |
+        mkdir keys
+        ssh-keygen -m PEM -t rsa -b 4096 -N '' -f ./keys/ssh.pem
+
+        #echo "SSH_KEY_PEM_PUB=$(cat ./keys/ssh.pem.pub)" >> $GITHUB_ENV
+
+        #echo 'SSH_KEY_PEM<<EOF' >> $GITHUB_ENV
+        #cat ./keys/ssh.pem >> $GITHUB_ENV
+        #echo 'EOF' >> $GITHUB_ENV
+
+        SSH_PRIVATE=$(cat ./keys/ssh.pem)
+        echo "::add-mask::$(echo -e $SSH_PRIVATE)"
+
+        SSH_PUBLIC=$(cat ./keys/ssh.pem.pub)
+        echo "::add-mask::$(echo -e $SSH_PUBLIC)"
+
+        echo "::set-output name=ssh-public::$(echo -e $SSH_PUBLIC)"
+        echo "::set-output name=ssh-private::$(echo -e $SSH_PRIVATE)"
+
+        echo "Generated keys! 🎉"
+
+    - name: Prepare secrets for key vault
+      id: prepare-secrets
+      env:
+        ADDITIONAL_KEY_VAULT_SECRETS: >-
+          {
+            "secrets": [
+              {"name": "sshPrivate", "secret": "${{ steps.generate-ssh-keys.outputs.ssh-private }}" },
+              {"name": "sshPublic", "secret": "${{ steps.generate-ssh-keys.outputs.ssh-public }}" }
+            ]
+          }
+      run: |
+        echo "::set-output name=key-vault-secrets::$(echo $ADDITIONAL_KEY_VAULT_SECRETS | jq -MRc)"
+
+    - name: Deploy bicep 💪
+      uses: azure/arm-deploy@v1
+      with:
+        subscriptionId: ${{ env.AZURE_SUBSCRIPTION_ID }}
+        resourceGroupName: ${{ env.AZURE_RESOURCE_GROUP_NAME }}
+        template: ./bicep/main-workflow-key-vault.bicep
+        failOnStdErr: false
+        parameters: >-
+          developerObjectIdKeyVaultAccessPolicy="${{ secrets.AZURE_DEVELOPER_OBJECT_ID }}"
+          additionalSecrets=${{ steps.prepare-secrets.outputs.key-vault-secrets }}
+
+
+    - name: Last step diagnostics
+      if: always()
+      run: |
+        pwd
+        printenv | sort
+        ls -alFR -I.git
