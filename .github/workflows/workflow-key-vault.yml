@@ -56,7 +56,10 @@ jobs:
         SSH_PRIVATE=$(cat ./keys/ssh.pem)
         echo "::add-mask::$(echo -e $SSH_PRIVATE)"
 
-        echo "::set-output name=ssh-public::$(cat ./keys/ssh.pem.pub)"
+        SSH_PUBLIC=$(cat ./keys/ssh.pem.pub)
+        echo "::add-mask::$(echo -e $SSH_PUB)"
+
+        echo "::set-output name=ssh-public::$(echo -e $SSH_PUBLIC)"
         echo "::set-output name=ssh-private::$(echo -e $SSH_PRIVATE)"
 
         echo "Generated keys! 🎉"
