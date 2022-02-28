@@ -16,7 +16,7 @@ env:
   AZURE_RESOURCE_GROUP_LOCATION: centralus
 
 jobs:
-  build:
+  generate-and-deploy:
 
     runs-on: ubuntu-latest
 
