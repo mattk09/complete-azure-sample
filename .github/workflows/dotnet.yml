@@ -24,7 +24,7 @@ env:
   DOTNET_VERSION: 6.0.x
   ADDITIONAL_KEY_VAULT_SECRETS: >-
     {
-      secrets: [
+      \"secrets\": [
           {\"name\": \"Sample--Secret\", \"secret\": \"Sample-Secret\" }
       ]
     }

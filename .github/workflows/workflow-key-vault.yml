@@ -65,7 +65,7 @@ jobs:
       env:
         ADDITIONAL_KEY_VAULT_SECRETS: >-
           {
-            secrets: [
+            "secrets": [
               {"name": "sshPrivate", "secret": "${{ steps.generate-ssh-keys.outputs.ssh-private }}" },
               {"name": "sshPublic", "secret": "${{ steps.generate-ssh-keys.outputs.ssh-public }}" }
             ]
