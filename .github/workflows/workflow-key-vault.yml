@@ -54,7 +54,7 @@ jobs:
         #echo 'EOF' >> $GITHUB_ENV
 
         SSH_PRIVATE=$(cat ./keys/ssh.pem)
-        echo "::add-mask::$SSH_PRIVATE"
+        echo "::add-mask::$(echo -e $SSH_PRIVATE)"
 
         echo "::set-output name=ssh-public::$(cat ./keys/ssh.pem.pub)"
         echo "::set-output name=ssh-private::$(echo -e $SSH_PRIVATE)"
