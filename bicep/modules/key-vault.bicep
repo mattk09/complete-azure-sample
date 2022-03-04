@@ -45,7 +45,7 @@ resource secretReaderRoleDefinition 'Microsoft.Authorization/roleDefinitions@201
 }
 
 resource roleAssignment 'Microsoft.Authorization/roleAssignments@2021-04-01-preview' = [for i in range(0, length(additionalAccessPolicies)): {
-  name: guid(subscription().id, additionalAccessPolicies[i].objectId, secretReaderRoleDefinition.id, string(i))
+  name: guid(subscription().id, resourceGroup().id, additionalAccessPolicies[i].objectId, secretReaderRoleDefinition.id, string(i))
   scope: keyVault
   properties: {
     roleDefinitionId: secretReaderRoleDefinition.id
