@@ -23,8 +23,15 @@ var devAccessPolicy = {
   principalType: 'User'
 }
 
+module sshKey 'modules/ssh-key.bicep' = {
+  name: 'ssh-key-setup'
+  params: {
+    location: location
+  }
+}
+
 module keyVault 'modules/key-vault.bicep' = {
-  name: name
+  name: 'key-vault'
   params: {
     name: name
     location: location

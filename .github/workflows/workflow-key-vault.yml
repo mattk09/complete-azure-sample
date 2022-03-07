@@ -10,6 +10,8 @@ on:
     branches:
     paths:
     - .github/workflows/workflow-key-vault.yml
+    - bicep/main-workflow-key-vault.bicep
+    - bicep/modules/ssh-key.bicep
 
 env:
   AZURE_RESOURCE_GROUP_NAME: ${{ github.event.inputs.resource-group-name || 'mattk09-workflow' }}
