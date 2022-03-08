@@ -54,13 +54,14 @@ jobs:
     - name: Code Coverage
       run: |
         dotnet tool install --tool-path . dotnet-reportgenerator-globaltool
-        ./reportgenerator -reports:$(Agent.TempDirectory)/**/coverage.cobertura.xml -targetdir:$(Build.SourcesDirectory)/CodeCoverage -reporttypes:Cobertura
+        mkdir code-coverage
+        ./reportgenerator -reports:./**/coverage.cobertura.xml -targetdir:./code-coverage -reporttypes:Cobertura
 
     - name: Publish Code Coverage
       uses: actions/upload-artifact@v2
       with:
         name: sample-code-coverage
-        path: ./CodeCoverage/Cobertura.xml
+        path: ./code-coverage/Cobertura.xml
 
     - name: Publish WebApi
       if: success() && (env.IS_MAIN_PUSH == 'true' || github.event_name == 'workflow_dispatch')
