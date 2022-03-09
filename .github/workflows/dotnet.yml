@@ -55,7 +55,7 @@ jobs:
       run: |
         dotnet tool install --tool-path . dotnet-reportgenerator-globaltool
         mkdir code-coverage
-        ./reportgenerator -reports:./**/coverage.cobertura.xml -targetdir:./code-coverage -reporttypes:Cobertura;HtmlSummary
+        ./reportgenerator -reports:./**/coverage.cobertura.xml -targetdir:./code-coverage -reporttypes:"Cobertura;HtmlSummary"
 
     - name: Publish Code Coverage
       uses: actions/upload-artifact@v2
