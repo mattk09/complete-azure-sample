@@ -23,6 +23,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{F6599C20-3D0
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sample.Functions", "src\Sample.Functions\Sample.Functions.csproj", "{E3CFC348-1E11-4BF8-832F-5556AD1E368E}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sample.Observability.Prometheus", "src\Sample.Observability.Prometheus\Sample.Observability.Prometheus.csproj", "{718FB040-3182-4D97-AAEC-0F8A38CB7850}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -105,6 +107,18 @@ Global
 		{E3CFC348-1E11-4BF8-832F-5556AD1E368E}.Release|x64.Build.0 = Release|Any CPU
 		{E3CFC348-1E11-4BF8-832F-5556AD1E368E}.Release|x86.ActiveCfg = Release|Any CPU
 		{E3CFC348-1E11-4BF8-832F-5556AD1E368E}.Release|x86.Build.0 = Release|Any CPU
+		{718FB040-3182-4D97-AAEC-0F8A38CB7850}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{718FB040-3182-4D97-AAEC-0F8A38CB7850}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{718FB040-3182-4D97-AAEC-0F8A38CB7850}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{718FB040-3182-4D97-AAEC-0F8A38CB7850}.Debug|x64.Build.0 = Debug|Any CPU
+		{718FB040-3182-4D97-AAEC-0F8A38CB7850}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{718FB040-3182-4D97-AAEC-0F8A38CB7850}.Debug|x86.Build.0 = Debug|Any CPU
+		{718FB040-3182-4D97-AAEC-0F8A38CB7850}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{718FB040-3182-4D97-AAEC-0F8A38CB7850}.Release|Any CPU.Build.0 = Release|Any CPU
+		{718FB040-3182-4D97-AAEC-0F8A38CB7850}.Release|x64.ActiveCfg = Release|Any CPU
+		{718FB040-3182-4D97-AAEC-0F8A38CB7850}.Release|x64.Build.0 = Release|Any CPU
+		{718FB040-3182-4D97-AAEC-0F8A38CB7850}.Release|x86.ActiveCfg = Release|Any CPU
+		{718FB040-3182-4D97-AAEC-0F8A38CB7850}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -115,5 +129,6 @@ Global
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{E3CFC348-1E11-4BF8-832F-5556AD1E368E} = {F6599C20-3D05-4ABD-B2E2-BB6F0A2DD9F9}
+		{718FB040-3182-4D97-AAEC-0F8A38CB7850} = {F6599C20-3D05-4ABD-B2E2-BB6F0A2DD9F9}
 	EndGlobalSection
 EndGlobal

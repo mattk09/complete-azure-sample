@@ -24,6 +24,7 @@
     <ProjectReference Include="..\Sample\Sample.csproj" />
     <ProjectReference Include="..\Sample.Storage.Azure\Sample.Storage.Azure.csproj" />
     <ProjectReference Include="..\Sample.Contracts\Sample.Contracts.csproj" />
+    <ProjectReference Include="..\Sample.Observability.Prometheus\Sample.Observability.Prometheus.csproj" />
   </ItemGroup>
 
 </Project>
