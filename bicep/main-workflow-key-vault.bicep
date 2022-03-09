@@ -23,13 +23,6 @@ var devAccessPolicy = {
   principalType: 'User'
 }
 
-module sshKey 'modules/ssh-key.bicep' = {
-  name: 'ssh-key-setup'
-  params: {
-    location: location
-  }
-}
-
 module keyVault 'modules/key-vault.bicep' = {
   name: 'key-vault'
   params: {
@@ -41,3 +34,15 @@ module keyVault 'modules/key-vault.bicep' = {
     ], empty(developerObjectIdKeyVaultAccessPolicy) ? 1 : 0)
   }
 }
+
+module sshKey 'modules/ssh-key.bicep' = {
+  name: 'ssh-key-setup'
+  params: {
+    name: name
+    location: location
+    keyVaultName: keyVault.outputs.keyVaultName
+    sshKeySecretName: 'generated-sshkey'
+  }
+}
+
+output sshPublicKey string = sshKey.outputs.sshPublicKey
