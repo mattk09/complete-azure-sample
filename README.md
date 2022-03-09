@@ -7,17 +7,16 @@ Depending on your project needs, you may not need all components or pieces inclu
 ## Project Features
 
 - net 6.0 WebApi
-- CI/CD (all yaml/stages)
+- CI/CD (yaml)
   - Build
   - Analyzers
     - FxCop
     - StyleCop
-    - Document spell check and Markdown Lint
   - Test
   - Code Coverage (coverlet)
   - Release
+    - Uses [GitHub Actions][github-actions]
     - Deploys Azure resources
-    - Uses environments
 - Swagger using [NSwag][swagger-nswag]
   - [Swashbuckle][swagger-swashbuckle] is another alternative
   - Navigate to `/swagger` endpoint to view
@@ -47,44 +46,39 @@ It is not always easy to see in the code, but this project gains a lot from usin
 - [Naming Conventions][naming]
 - [Secret Management][developer-secret-management] during development
 
-## AZ Cli
+## Getting Started
+
+For a successful deployment from GitHub Actions, you will need to connect to azure using a service principal.  This can be setup one time and added to both Actions/Codespace secrets in your [GitHub Secrets][githb-secrets].
+
+Tools needed:
+
+- [net 6.0][dotnet-install]
+- [az cli][az-cli]
+
+A service principal can be created from the command line by following these steps:
 
 ```bash
-# Create service principal
+# login from browser
 az login --use-device-code
-az account set --subscription <<your preferred subscription>>
+
+# If you have multiple subscriptions select the one you prefer to deploy into
+az account set --subscription "Your Subscription Name"
+
+# Validate
 az account show
 
 AZURE_SUBSCRIPTION_ID=$(az account show --query "id" --output tsv)
+
+# Create the sp with contributor role over your subscription (Note: you can limit it down to a specific resource group for tighter access control)
+# Take this output for your GitHub secret and save as 'AZURE_CREDENTIALS'
 az ad sp create-for-rbac \
     --name "github-actions" \
     --role contributor \
     --scopes /subscriptions/$AZURE_SUBSCRIPTION_ID \
     --sdk-auth
 
+# Validate
 az ad sp list --display-name 'github-actions'
-
-az role definition create --role-definition '{
-        "Name": "Custom Authorization Contributor",
-        "Description": "Ability to assign roles",
-        "Actions": [
-          "Microsoft.Authorization/roleAssignments/write"
-        ],
-        "DataActions": [
-        ],
-        "NotDataActions": [
-        ],
-        "NotActions": [
-          "Microsoft.Authorization/*/Delete"
-        ],
-        "AssignableScopes": ["/subscriptions/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxx"]
-    }'
-
-az role definition list --name "Custom Authorization Contributor"
-
-az ad sp list --display-name 'github-actions' --query "[0].objectId" --output tsv
-
-az role assignment create --assignee $SP_ID --role "Custom Authorization Contributor" 
 ```
 
 [naming]: https://docs.microsoft.com/en-us/dotnet/standard/design-guidelines/naming-guidelines
@@ -92,7 +86,11 @@ az role assignment create --assignee $SP_ID --role "Custom Authorization Contrib
 [code-coverage]: https://docs.microsoft.com/en-us/azure/devops/pipelines/ecosystems/dotnet-core?view=azure-devops#collect-code-coverage
 [dotnet-configuration]: https://docs.microsoft.com/en-us/aspnet/core/fundamentals/configuration/?view=aspnetcore-3.1
 [dotnet-configuration-default-builder]: https://docs.microsoft.com/en-us/dotnet/api/microsoft.extensions.hosting.host.createdefaultbuilder?view=dotnet-plat-ext-3.1
+[dotnet-install]: https://docs.microsoft.com/en-us/dotnet/core/tools/dotnet-install-script#examples
 
 [swagger-nswag]: https://docs.microsoft.com/en-us/aspnet/core/tutorials/getting-started-with-nswag?view=aspnetcore-3.1&tabs=visual-studio
 [swagger-swashbucke]: https://docs.microsoft.com/en-us/aspnet/core/tutorials/getting-started-with-swashbuckle?view=aspnetcore-3.1&tabs=visual-studio
 [storage-explorer]: https://azure.microsoft.com/en-us/features/storage-explorer/
+[github-actions]: https://docs.github.com/en/actions/learn-github-actions/understanding-github-actions
+[github-secrets]: https://docs.github.com/en/actions/security-guides/encrypted-secrets#creating-encrypted-secrets-for-a-repository
+[az-cli]: https://docs.microsoft.com/en-us/cli/azure/install-azure-cli
