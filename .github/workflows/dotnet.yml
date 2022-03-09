@@ -49,7 +49,19 @@ jobs:
       run: dotnet build --no-restore
 
     - name: Test
-      run: dotnet test --no-build --verbosity normal --settings coverlet.runsettings.xml
+      run: dotnet test --no-build --settings coverlet.runsettings.xml
+
+    - name: Code Coverage
+      run: |
+        dotnet tool install --tool-path . dotnet-reportgenerator-globaltool
+        mkdir code-coverage
+        ./reportgenerator -reports:./**/coverage.cobertura.xml -targetdir:./code-coverage -reporttypes:"Cobertura;HtmlSummary"
+
+    - name: Publish Code Coverage
+      uses: actions/upload-artifact@v2
+      with:
+        name: sample-code-coverage
+        path: ./code-coverage/
 
     - name: Publish WebApi
       if: success() && (env.IS_MAIN_PUSH == 'true' || github.event_name == 'workflow_dispatch')
