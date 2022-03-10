@@ -182,10 +182,8 @@ resource functionsApp 'Microsoft.Web/sites@2021-03-01' = {
   }
 }
 
-output result object = {
-  storageEndpoint: storageAccount.properties.primaryEndpoints
-  webAppName: webApp.name
-  webAppNameHealthCheckEndpoint: webApp.properties.defaultHostName
-  functionsAppName: functionsApp.name
-  functionsAppHealthCheckEndpoint: functionsApp.properties.defaultHostName
-}
+output storageEndpoint object = storageAccount.properties.primaryEndpoints
+output webAppName string = webApp.name
+output webAppNameHealthCheckEndpoint string = webApp.properties.defaultHostName
+output functionsAppName string = functionsApp.name
+output functionsAppHealthCheckEndpoint string = functionsApp.properties.defaultHostName

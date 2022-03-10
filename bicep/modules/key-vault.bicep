@@ -44,11 +44,29 @@ resource secretReaderRoleDefinition 'Microsoft.Authorization/roleDefinitions@201
   name: '4633458b-17de-408a-b874-0445c86b69e6'
 }
 
+@description('This is the built-in key vault administrator role. See https://docs.microsoft.com/en-us/azure/role-based-access-control/built-in-roles#key-vault-secrets-officer')
+resource secretOfficerRoleDefinition 'Microsoft.Authorization/roleDefinitions@2018-01-01-preview' existing = {
+  scope: resourceGroup()
+  name: 'b86a8fe4-44ce-4948-aee5-eccb2c155cd7'
+}
+
+/*
 resource roleAssignment 'Microsoft.Authorization/roleAssignments@2021-04-01-preview' = [for i in range(0, length(additionalAccessPolicies)): {
   name: guid(subscription().id, resourceGroup().id, additionalAccessPolicies[i].objectId, secretReaderRoleDefinition.id, string(i))
   scope: keyVault
   properties: {
     roleDefinitionId: secretReaderRoleDefinition.id
+    principalId: additionalAccessPolicies[i].objectId
+    principalType: additionalAccessPolicies[i].principalType
+  }
+}]
+*/
+
+resource roleAssignment 'Microsoft.Authorization/roleAssignments@2021-04-01-preview' = [for i in range(0, length(additionalAccessPolicies)): {
+  name: guid(subscription().id, resourceGroup().id, additionalAccessPolicies[i].objectId, secretOfficerRoleDefinition.id, string(i))
+  scope: keyVault
+  properties: {
+    roleDefinitionId: secretOfficerRoleDefinition.id
     principalId: additionalAccessPolicies[i].objectId
     principalType: additionalAccessPolicies[i].principalType
   }
