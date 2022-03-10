@@ -5,7 +5,21 @@ on:
     inputs:
       resource-group-name:
         required: false
+        description: Azure resource group name (Leave empty to default to '{GITHUB_ACTOR}-sample')
         type: string
+      location:
+        required: false
+        description: Azure resource group location (Leave empty to default to centralus)
+        type: string
+      deployment-mode:
+        required: true
+        description: Azure deployment mode
+        type: choice
+        options:
+        - Complete
+        - Incremental
+        - Validate
+
   push:
     branches:
     paths:
@@ -17,10 +31,18 @@ on:
 
 env:
   IS_MAIN_PUSH: ${{ github.ref == 'refs/heads/main' }}
-  AZURE_RESOURCE_GROUP_NAME: ${{ github.event.inputs.resource-group-name || 'mattk09-centralus' }}
-  AZURE_RESOURCE_GROUP_LOCATION: centralus
+  AZURE_RESOURCE_GROUP_NAME: ${{ github.event.inputs.resource-group-name || format('{0}-sample', github.actor) }}
+  AZURE_RESOURCE_GROUP_LOCATION: ${{ github.event.inputs.location || 'centralus' }}
+  AZURE_DEPLOYMENT_NAME: ${{ format('sample.{0}.{1}', github.actor, github.run_id) }}
+  AZURE_DEPLOYMENT_MODE: >-
+    ${{ 
+      github.event.inputs.deployment-mode || 
+      (github.ref == 'refs/heads/main' && 'Complete' || 'Validate')
+    }}
   BUILD_CONFIGURATION: Release
+  MAIN_BICEP_TEMPLATE_PATH: ./bicep/main.bicep
   DOTNET_VERSION: 6.0.x
+  # These should be pulled from secrets, github will mask the output from being shown in logs
   ADDITIONAL_KEY_VAULT_SECRETS: >-
     {
       \"secrets\": [
@@ -135,7 +157,9 @@ jobs:
       with:
         subscriptionId: ${{ env.AZURE_SUBSCRIPTION_ID }}
         resourceGroupName: ${{ env.AZURE_RESOURCE_GROUP_NAME }}
-        template: ./bicep/main.bicep
+        deploymentMode: ${{ env.AZURE_DEPLOYMENT_MODE }}
+        deploymentName: ${{ env.AZURE_DEPLOYMENT_NAME }}
+        template: ${{ env.MAIN_BICEP_TEMPLATE_PATH }}
         failOnStdErr: false
         parameters: >-
           additionalSecrets="${{ env.ADDITIONAL_KEY_VAULT_SECRETS }}"
