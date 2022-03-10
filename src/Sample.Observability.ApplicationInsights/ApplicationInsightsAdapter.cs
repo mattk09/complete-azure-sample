@@ -55,6 +55,7 @@ namespace Sample.Observability
 
             public void SetBaggage(string key, string value)
             {
+                Activity.Current?.SetBaggage(key, value);
             }
 
             public void Dispose()

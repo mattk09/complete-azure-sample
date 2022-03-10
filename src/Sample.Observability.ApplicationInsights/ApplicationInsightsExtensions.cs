@@ -1,18 +1,16 @@
-using Microsoft.AspNetCore.Builder;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Sample.Observability
 {
     public static class ApplicationInsightsExtensions
     {
-        public static IServiceCollection AddCoreTracing(this IServiceCollection services)
+        public static IServiceCollection AddCoreTelemetry(this IServiceCollection services, IConfiguration configuration)
         {
-            return services;
-        }
+            services.AddApplicationInsightsTelemetry(configuration);
+            services.AddSingleton<ICoreTelemetry, ApplicationInsightsAdapter>();
 
-        public static IApplicationBuilder UseSomeMiddleware(this IApplicationBuilder applicationBuilder)
-        {
-            return applicationBuilder;
+            return services;
         }
     }
 }

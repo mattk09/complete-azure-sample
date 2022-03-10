@@ -29,14 +29,14 @@ namespace Sample
 
             services.AddCoreMetrics(services.AddHealthChecks());
 
-            // By default this will look for 'ApplicationInsights:InstrumentationKey' in the configuration.
-            // This is added automatically by our 'AddAzureKeyVault' call in Program.cs
-            services.AddApplicationInsightsTelemetry(this.Configuration);
-
             services.AddSingleton<IWeatherForecaster, WeatherForecaster>();
 
             // Add the the proper ISampleStorage and related services based on configuration
             services.AddSampleStorage(settings);
+
+            // By default this will look for 'ApplicationInsights:InstrumentationKey' in the configuration.
+            // This is added automatically by our 'AddAzureKeyVault' call in Program.cs
+            services.AddCoreTelemetry(this.Configuration);
 
             services.AddControllers();
 

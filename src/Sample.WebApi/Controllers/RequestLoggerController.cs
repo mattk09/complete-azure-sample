@@ -3,6 +3,7 @@ using System.IO;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 
+using Sample.Observability;
 using Sample.Storage;
 
 namespace Sample.Controllers
@@ -12,29 +13,35 @@ namespace Sample.Controllers
     public class RequestLoggerController : ControllerBase
     {
         private readonly IStorage storage;
+        private readonly ICoreTelemetry telemetry;
 
-        public RequestLoggerController(IStorage storage)
+        public RequestLoggerController(IStorage storage, ICoreTelemetry telemetry)
         {
             this.storage = storage;
+            this.telemetry = telemetry;
         }
 
         [HttpGet("keys")]
         public IAsyncEnumerable<string> GetIdentifiersAsync()
         {
+            using var span = this.telemetry.Start($"{nameof(RequestLoggerController)}-${nameof(GetIdentifiersAsync)}");
+
             return this.storage.GetIdentifiersAsync();
         }
 
-        [HttpGet("{**relativePathWithoutQuery}")]
-        public async Task<ActionResult<Stream>> GetAsync(string relativePathWithoutQuery)
+        [HttpGet]
+        public async Task<ActionResult<Stream>> GetAsync([FromQueryAttribute]string key)
         {
-            if (string.IsNullOrWhiteSpace(relativePathWithoutQuery))
+            using var span = this.telemetry.Start($"{nameof(RequestLoggerController)}-${nameof(GetAsync)}");
+
+            if (string.IsNullOrWhiteSpace(key))
             {
                 return this.BadRequest();
             }
 
             try
             {
-                return await this.storage.GetAsync(relativePathWithoutQuery);
+                return await this.storage.GetAsync(key);
             }
             catch (KeyNotFoundException)
             {
@@ -45,6 +52,8 @@ namespace Sample.Controllers
         [HttpDelete]
         public async Task<ActionResult> DeleteAsync([FromQuery] string key)
         {
+            using var span = this.telemetry.Start($"{nameof(RequestLoggerController)}-${nameof(DeleteAsync)}");
+
             if (string.IsNullOrWhiteSpace(key))
             {
                 return this.BadRequest();
@@ -55,15 +64,17 @@ namespace Sample.Controllers
             return this.Ok();
         }
 
-        [HttpPost("{**relativePathWithoutQuery}")]
-        public async Task<IActionResult> PostAsync(string relativePathWithoutQuery)
+        [HttpPost]
+        public async Task<IActionResult> PostAsync([FromQuery] string key)
         {
-            if (string.IsNullOrWhiteSpace(relativePathWithoutQuery))
+            using var span = this.telemetry.Start($"{nameof(RequestLoggerController)}-${nameof(PostAsync)}");
+
+            if (string.IsNullOrWhiteSpace(key))
             {
                 return this.BadRequest();
             }
 
-            await this.storage.CreateAsync(relativePathWithoutQuery, this.HttpContext.Request.Body);
+            await this.storage.CreateAsync(key, this.HttpContext.Request.Body);
 
             return this.Ok();
         }
