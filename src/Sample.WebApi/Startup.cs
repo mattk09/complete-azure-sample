@@ -4,6 +4,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Sample.Extensions;
+using Sample.Observability;
 using Sample.Services;
 using Sample.Services.Weather;
 using Sample.Settings;
@@ -26,16 +27,16 @@ namespace Sample
             var settings = new SampleSettings();
             this.Configuration.Bind(settings);
 
-            services.AddHealthChecks();
-
-            // By default this will look for 'ApplicationInsights:InstrumentationKey' in the configuration.
-            // This is added automatically by our 'AddAzureKeyVault' call in Program.cs
-            services.AddApplicationInsightsTelemetry(this.Configuration);
+            services.AddCoreMetrics(services.AddHealthChecks());
 
             services.AddSingleton<IWeatherForecaster, WeatherForecaster>();
 
             // Add the the proper ISampleStorage and related services based on configuration
             services.AddSampleStorage(settings);
+
+            // By default this will look for 'ApplicationInsights:InstrumentationKey' in the configuration.
+            // This is added automatically by our 'AddAzureKeyVault' call in Program.cs
+            services.AddCoreTelemetry(this.Configuration);
 
             services.AddControllers();
 
@@ -55,6 +56,10 @@ namespace Sample
                 app.UseHttpsRedirection();
             }
 
+            app.ApplicationServices
+                .GetRequiredService<ICoreMetrics>()
+                .ApplicationInfo();
+
             // Use middleware to route '/' to swagger
             app.Use(async (context, nextAsync) =>
             {
@@ -71,6 +76,8 @@ namespace Sample
             app.UseAuthentication();
             app.UseAuthorization();
 
+            app.UseCoreMetricsMiddleware();
+
             // Register the Swagger generator and the Swagger UI middlewares
             app.UseOpenApi();
             app.UseSwaggerUi3();
@@ -79,6 +86,7 @@ namespace Sample
             {
                 endpoints.MapControllers();
                 endpoints.MapHealthChecks("healthcheck");
+                endpoints.MapCoreMetrics();
             });
         }
     }

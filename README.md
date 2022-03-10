@@ -89,7 +89,7 @@ az ad sp list --display-name 'github-actions'
 [dotnet-install]: https://docs.microsoft.com/en-us/dotnet/core/tools/dotnet-install-script#examples
 
 [swagger-nswag]: https://docs.microsoft.com/en-us/aspnet/core/tutorials/getting-started-with-nswag?view=aspnetcore-3.1&tabs=visual-studio
-[swagger-swashbucke]: https://docs.microsoft.com/en-us/aspnet/core/tutorials/getting-started-with-swashbuckle?view=aspnetcore-3.1&tabs=visual-studio
+[swagger-swashbuckle]: https://docs.microsoft.com/en-us/aspnet/core/tutorials/getting-started-with-swashbuckle?view=aspnetcore-3.1&tabs=visual-studio
 [storage-explorer]: https://azure.microsoft.com/en-us/features/storage-explorer/
 [github-actions]: https://docs.github.com/en/actions/learn-github-actions/understanding-github-actions
 [github-secrets]: https://docs.github.com/en/actions/security-guides/encrypted-secrets#creating-encrypted-secrets-for-a-repository

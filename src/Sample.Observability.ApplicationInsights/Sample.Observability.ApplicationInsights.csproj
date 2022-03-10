@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
@@ -6,13 +6,11 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Azure.Extensions.AspNetCore.Configuration.Secrets" Version="1.2.1" />
-    <PackageReference Include="Azure.Identity" Version="1.5.0" />
+    <PackageReference Include="Microsoft.ApplicationInsights.AspNetCore" Version="2.20.0" />
     <PackageReference Include="Microsoft.CodeAnalysis.FxCopAnalyzers" Version="3.0.0">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="NSwag.AspNetCore" Version="13.4.2" />
     <PackageReference Include="StyleCop.Analyzers" Version="1.1.118">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
@@ -20,11 +18,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Sample\Sample.csproj" />
-    <ProjectReference Include="..\Sample.Storage.Azure\Sample.Storage.Azure.csproj" />
     <ProjectReference Include="..\Sample.Contracts\Sample.Contracts.csproj" />
-    <ProjectReference Include="..\Sample.Observability.Prometheus\Sample.Observability.Prometheus.csproj" />
-    <ProjectReference Include="..\Sample.Observability.ApplicationInsights\Sample.Observability.ApplicationInsights.csproj" />
   </ItemGroup>
 
 </Project>
