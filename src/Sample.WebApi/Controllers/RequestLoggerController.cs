@@ -24,7 +24,7 @@ namespace Sample.Controllers
         [HttpGet("keys")]
         public IAsyncEnumerable<string> GetIdentifiersAsync()
         {
-            using var span = this.telemetry.Start($"{nameof(RequestLoggerController)}-${nameof(GetIdentifiersAsync)}");
+            using var span = this.telemetry.Start($"{nameof(RequestLoggerController)}-{nameof(GetIdentifiersAsync)}");
 
             return this.storage.GetIdentifiersAsync();
         }
@@ -32,7 +32,7 @@ namespace Sample.Controllers
         [HttpGet]
         public async Task<ActionResult<Stream>> GetAsync([FromQueryAttribute]string key)
         {
-            using var span = this.telemetry.Start($"{nameof(RequestLoggerController)}-${nameof(GetAsync)}");
+            using var span = this.telemetry.Start($"{nameof(RequestLoggerController)}-{nameof(GetAsync)}");
 
             if (string.IsNullOrWhiteSpace(key))
             {
@@ -41,6 +41,7 @@ namespace Sample.Controllers
 
             try
             {
+                span.SetTag(nameof(key), key);
                 return await this.storage.GetAsync(key);
             }
             catch (KeyNotFoundException)
@@ -52,13 +53,14 @@ namespace Sample.Controllers
         [HttpDelete]
         public async Task<ActionResult> DeleteAsync([FromQuery] string key)
         {
-            using var span = this.telemetry.Start($"{nameof(RequestLoggerController)}-${nameof(DeleteAsync)}");
+            using var span = this.telemetry.Start($"{nameof(RequestLoggerController)}-{nameof(DeleteAsync)}");
 
             if (string.IsNullOrWhiteSpace(key))
             {
                 return this.BadRequest();
             }
 
+            span.SetTag(nameof(key), key);
             await this.storage.RemoveAsync(key);
 
             return this.Ok();
@@ -67,13 +69,14 @@ namespace Sample.Controllers
         [HttpPost]
         public async Task<IActionResult> PostAsync([FromQuery] string key)
         {
-            using var span = this.telemetry.Start($"{nameof(RequestLoggerController)}-${nameof(PostAsync)}");
+            using var span = this.telemetry.Start($"{nameof(RequestLoggerController)}-{nameof(PostAsync)}");
 
             if (string.IsNullOrWhiteSpace(key))
             {
                 return this.BadRequest();
             }
 
+            span.SetTag(nameof(key), key);
             await this.storage.CreateAsync(key, this.HttpContext.Request.Body);
 
             return this.Ok();
