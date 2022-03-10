@@ -173,11 +173,10 @@ jobs:
         package: packages/Sample.Functions
 
     - name: Sample.Function Health Check
-      if: ${{ false }}
       env:
         AZURE_DEPLOY_OUTPUT: ${{ toJSON(steps.azure-deploy.outputs) }}
-        HOST_TO_TEST: ""
       run: |
+        HOST_TO_TEST=$(echo $AZURE_DEPLOY_OUTPUT | jq ".functionsAppHealthCheckEndpoint" -r)
         while [[ "$(curl -s -o /dev/null -w ''%{http_code}'' $HOST_TO_TEST)" != "200" ]]; do sleep 5; done
 
     - name: Deploy Sample.WebApi

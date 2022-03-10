@@ -184,6 +184,6 @@ resource functionsApp 'Microsoft.Web/sites@2021-03-01' = {
 
 output storageEndpoint object = storageAccount.properties.primaryEndpoints
 output webAppName string = webApp.name
-output webAppNameHealthCheckEndpoint string = webApp.properties.defaultHostName
+output webAppNameHealthCheckEndpoint string = 'https://${webApp.properties.defaultHostName}/healthcheck'
 output functionsAppName string = functionsApp.name
-output functionsAppHealthCheckEndpoint string = functionsApp.properties.defaultHostName
+output functionsAppHealthCheckEndpoint string = 'https://${functionsApp.properties.defaultHostName}/api/healthcheck'
