@@ -173,11 +173,21 @@ jobs:
         package: packages/Sample.Functions
 
     - name: Sample.Function Health Check
+      uses: Azure/CLI@v1
       env:
         AZURE_DEPLOY_OUTPUT: ${{ toJSON(steps.azure-deploy.outputs) }}
-      run: |
-        HOST_TO_TEST=$(echo $AZURE_DEPLOY_OUTPUT | jq ".functionsAppHealthCheckEndpoint" -r)
-        while [[ "$(curl -s -o /dev/null -w ''%{http_code}'' $HOST_TO_TEST)" != "200" ]]; do sleep 5; done
+      with:
+        inlineScript: |
+          #!/bin/bash
+
+          # Force key creation in the key vault (find better way)
+          az functionapp function keys list \
+            --resource-group $AZURE_RESOURCE_GROUP_NAME \
+            --name "${AZURE_RESOURCE_GROUP_NAME}-functions" \
+            --function-name HelloWorldSecure > /dev/null
+
+          HOST_TO_TEST=$(echo $AZURE_DEPLOY_OUTPUT | jq ".functionsAppHealthCheckEndpoint" -r)
+          timeout 3000 'while [[ "$(curl -s -o /dev/null -w ''%{http_code}'' $HOST_TO_TEST)" != "200" ]]; do sleep 5; done' || false
 
     - name: Deploy Sample.WebApi
       uses: azure/webapps-deploy@v2
