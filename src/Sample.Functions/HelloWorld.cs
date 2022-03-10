@@ -50,5 +50,15 @@ namespace Sample.Functions
 
             return new OkObjectResult("Secured");
         }
+
+        [FunctionName("healthcheck")]
+        public async Task<IActionResult> HealthCheckAsync(
+            [HttpTrigger(AuthorizationLevel.Anonymous, "get")] HttpRequest request,
+            ILogger log)
+        {
+            await Task.CompletedTask;
+
+            return new OkObjectResult("Healthy");
+        }
     }
 }

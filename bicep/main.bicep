@@ -146,6 +146,7 @@ resource functionsApp 'Microsoft.Web/sites@2021-03-01' = {
     serverFarmId: appServicePlan.id
     reserved: true
     siteConfig: {
+      healthCheckPath: 'api/healthcheck'
       appSettings: [
         {
           // I would prefer this comes from KeyVault, but the functions runtime consumes this before KV can be applied right now
