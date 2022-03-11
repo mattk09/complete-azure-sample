@@ -37,6 +37,7 @@ namespace Sample
             // By default this will look for 'ApplicationInsights:InstrumentationKey' in the configuration.
             // This is added automatically by our 'AddAzureKeyVault' call in Program.cs
             services.AddCoreTelemetry(this.Configuration);
+            services.AddHttpClient();
 
             services.AddControllers();
 

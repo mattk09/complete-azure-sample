@@ -1,5 +1,4 @@
 using System.IO;
-using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -49,16 +48,6 @@ namespace Sample.Functions
             await Task.CompletedTask;
 
             return new OkObjectResult("Secured");
-        }
-
-        [FunctionName("healthcheck")]
-        public async Task<IActionResult> HealthCheckAsync(
-            [HttpTrigger(AuthorizationLevel.Anonymous, "get")] HttpRequest request,
-            ILogger log)
-        {
-            await Task.CompletedTask;
-
-            return new OkObjectResult("Healthy");
         }
     }
 }
