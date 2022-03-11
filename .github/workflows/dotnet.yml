@@ -187,6 +187,7 @@ jobs:
       with:
         inlineScript: |
           #!/bin/bash
+          set -euo pipefail
 
           # Force key creation in the key vault (find better way)
           az functionapp function keys list \
@@ -194,7 +195,7 @@ jobs:
             --name "${AZURE_RESOURCE_GROUP_NAME}-functions" \
             --function-name HelloWorldSecure > /dev/null
 
-          timeout 3000 'while [[ "$(curl -s -o /dev/null -w ''%{http_code}'' $HOST_TO_TEST)" != "200" ]]; do sleep 5; done' || false
+          curl $HOST_TO_TEST -k -s -f -o /dev/null && true || false
 
     - name: Deploy Sample.WebApi
       uses: azure/webapps-deploy@v2
