@@ -153,6 +153,7 @@ jobs:
           az group create --name $AZURE_RESOURCE_GROUP_NAME --location $AZURE_RESOURCE_GROUP_LOCATION
 
     - name: Deploy bicep 💪
+      id: azure-deploy
       uses: azure/arm-deploy@v1
       with:
         subscriptionId: ${{ env.AZURE_SUBSCRIPTION_ID }}
@@ -165,17 +166,57 @@ jobs:
           additionalSecrets="${{ env.ADDITIONAL_KEY_VAULT_SECRETS }}"
           developerObjectIdKeyVaultAccessPolicy="${{ secrets.AZURE_DEVELOPER_OBJECT_ID }}"
 
+    - name: Deploy Sample.Functions
+      uses: Azure/functions-action@v1
+      with:
+        app-name: ${{ env.AZURE_RESOURCE_GROUP_NAME }}-functions
+        package: packages/Sample.Functions
+
+    - name: Parse deployment output
+      id: azure-deploy-parsed
+      env:
+        AZURE_DEPLOY_OUTPUT: ${{ toJSON(steps.azure-deploy.outputs) }}
+      run: |
+        HOST_TO_TEST=$(echo $AZURE_DEPLOY_OUTPUT | jq ".functionsAppHealthCheckEndpoint" -r)
+        echo "::set-output name=functionsAppHealthCheckEndpoint::$HOST_TO_TEST"
+
+    - name: Sample.Function Health Check
+      uses: Azure/CLI@v1
+      env:
+        HOST_TO_TEST: ${{ steps.azure-deploy-parsed.outputs.functionsAppHealthCheckEndpoint }}
+      with:
+        inlineScript: |
+          #!/bin/bash
+          set -euo pipefail
+
+          echo "Getting key..."
+          # Force key creation in the key vault (find better way)
+          az functionapp function keys list \
+            --resource-group $AZURE_RESOURCE_GROUP_NAME \
+            --name "$AZURE_RESOURCE_GROUP_NAME-functions" \
+            --function-name HelloWorldSecure > /dev/null
+
+          echo "Testing healthcheck..."
+          curl $HOST_TO_TEST -k -s -f -o /dev/null && true || false
+
     - name: Deploy Sample.WebApi
       uses: azure/webapps-deploy@v2
       with:
         app-name: ${{ env.AZURE_RESOURCE_GROUP_NAME }}
         package: packages/Sample.WebApi
 
-    - name: Deploy Sample.Functions
-      uses: Azure/functions-action@v1
+    - name: Save deployment output
+      env:
+        AZURE_DEPLOY_OUTPUT: ${{ toJSON(steps.azure-deploy.outputs) }}
+      run: |
+        mkdir artifacts
+        echo $AZURE_DEPLOY_OUTPUT
+        echo $AZURE_DEPLOY_OUTPUT >> artifacts/deployment.json
+    - name: Upload Azure Deploy Output
+      uses: actions/upload-artifact@v2
       with:
-        app-name: ${{ env.AZURE_RESOURCE_GROUP_NAME }}-functions
-        package: packages/Sample.Functions
+        name: Deployment
+        path: artifacts
 
     - name: Last step diagnostics
       if: always()
