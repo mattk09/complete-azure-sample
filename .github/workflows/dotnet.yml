@@ -189,12 +189,14 @@ jobs:
           #!/bin/bash
           set -euo pipefail
 
+          echo "Getting key..."
           # Force key creation in the key vault (find better way)
           az functionapp function keys list \
             --resource-group $AZURE_RESOURCE_GROUP_NAME \
-            --name "${AZURE_RESOURCE_GROUP_NAME}-functions" \
+            --name "$AZURE_RESOURCE_GROUP_NAME-functions" \
             --function-name HelloWorldSecure > /dev/null
 
+          echo "Testing healthcheck..."
           curl $HOST_TO_TEST -k -s -f -o /dev/null && true || false
 
     - name: Deploy Sample.WebApi
