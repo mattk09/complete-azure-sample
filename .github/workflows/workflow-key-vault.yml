@@ -48,8 +48,6 @@ jobs:
         parameters: >-
           developerObjectIdKeyVaultAccessPolicy="${{ secrets.AZURE_DEVELOPER_OBJECT_ID }}"
 
-#          additionalSecrets=${{ steps.prepare-secrets.outputs.key-vault-secrets }}
-
     - name: Public Key Artifact
       env:
         AZURE_DEPLOY_OUTPUT: ${{ toJSON(steps.azure-deploy.outputs) }}

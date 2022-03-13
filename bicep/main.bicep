@@ -83,6 +83,7 @@ resource webApp_appsettings 'Microsoft.Web/sites/config@2021-03-01' = {
   name: 'appsettings'
   properties: {
     KeyVaultNameFromDeployment: keyVault.name
+    FunctionsAppHostName : functionsApp.properties.defaultHostName
   }
 }
 
