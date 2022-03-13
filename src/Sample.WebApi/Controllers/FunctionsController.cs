@@ -32,5 +32,20 @@ namespace Sample.Controllers
 
             return await response.Content.ReadAsStringAsync();
         }
+
+        [HttpGet("secure")]
+        public async Task<string> GetSecureAsync()
+        {
+            using var httpClient = this.httpClientFactory.CreateClient();
+
+            var code = this.configuration.GetValue<string>("function:helloworldsecure:default");
+
+            httpClient.BaseAddress = new Uri($"https://{this.configuration.GetValue<string>("FunctionsAppHostName")}/api/");
+
+            var response = await httpClient.GetAsync(new Uri($"HelloWorldSecure?code={code}", UriKind.Relative));
+            response.EnsureSuccessStatusCode();
+
+            return await response.Content.ReadAsStringAsync();
+        }
     }
 }

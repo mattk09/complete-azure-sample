@@ -205,6 +205,19 @@ jobs:
         app-name: ${{ env.AZURE_RESOURCE_GROUP_NAME }}
         package: packages/Sample.WebApi
 
+
+    - name: Sample.WebApi Health Check
+      uses: Azure/CLI@v1
+      env:
+        HOST_TO_TEST: ${{ steps.azure-deploy.outputs.webAppHealthCheckEndpoint }}
+      with:
+        inlineScript: |
+          #!/bin/bash
+          set -euo pipefail
+
+          echo "Testing healthcheck..."
+          curl $HOST_TO_TEST -k -s -f -o /dev/null && true || false
+
     - name: Save deployment output
       env:
         AZURE_DEPLOY_OUTPUT: ${{ toJSON(steps.azure-deploy.outputs) }}
