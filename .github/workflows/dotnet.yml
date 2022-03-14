@@ -172,18 +172,10 @@ jobs:
         app-name: ${{ env.AZURE_RESOURCE_GROUP_NAME }}-functions
         package: packages/Sample.Functions
 
-    - name: Parse deployment output
-      id: azure-deploy-parsed
-      env:
-        AZURE_DEPLOY_OUTPUT: ${{ toJSON(steps.azure-deploy.outputs) }}
-      run: |
-        HOST_TO_TEST=$(echo $AZURE_DEPLOY_OUTPUT | jq ".functionsAppHealthCheckEndpoint" -r)
-        echo "::set-output name=functionsAppHealthCheckEndpoint::$HOST_TO_TEST"
-
     - name: Sample.Function Health Check
       uses: Azure/CLI@v1
       env:
-        HOST_TO_TEST: ${{ steps.azure-deploy-parsed.outputs.functionsAppHealthCheckEndpoint }}
+        HOST_TO_TEST: ${{ steps.azure-deploy.outputs.functionsAppHealthCheckEndpoint }}
       with:
         inlineScript: |
           #!/bin/bash
@@ -205,7 +197,6 @@ jobs:
         app-name: ${{ env.AZURE_RESOURCE_GROUP_NAME }}
         package: packages/Sample.WebApi
 
-
     - name: Sample.WebApi Health Check
       uses: Azure/CLI@v1
       env:
@@ -218,17 +209,18 @@ jobs:
           echo "Testing healthcheck..."
           curl $HOST_TO_TEST --retry 10 --retry-delay 5 --silent --fail --output /dev/null && true || false
 
-    - name: Save deployment output
+    - name: Save deployment Output
       env:
         AZURE_DEPLOY_OUTPUT: ${{ toJSON(steps.azure-deploy.outputs) }}
       run: |
         mkdir artifacts
         echo $AZURE_DEPLOY_OUTPUT
         echo $AZURE_DEPLOY_OUTPUT >> artifacts/deployment.json
+
     - name: Upload Azure Deploy Output
       uses: actions/upload-artifact@v2
       with:
-        name: Deployment
+        name: DeploymentOutput
         path: artifacts
 
     - name: Last step diagnostics
