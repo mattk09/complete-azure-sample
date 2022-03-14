@@ -25,7 +25,7 @@ jobs:
       run: |
         echo "CONTAINER_REGISTRY_URL=ghcr.io" >> $GITHUB_ENV
         echo "CONTAINER_REGISTRY_ACCESS_TOKEN=$GITHUB_TOKEN" >> $GITHUB_ENV
-        echo "CONTAINER_REGISTRY_USER=$GITHUB_USER" >> $GITHUB_ENV
+        echo "CONTAINER_REGISTRY_USER=$GITHUB_ACTOR" >> $GITHUB_ENV
 
     - name: Setup .NET
       uses: actions/setup-dotnet@v1
