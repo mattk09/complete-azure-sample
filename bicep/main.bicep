@@ -99,16 +99,19 @@ resource appInsights 'Microsoft.Insights/components@2020-02-02' = {
 var devAccessPolicy = {
   objectId: developerObjectIdKeyVaultAccessPolicy
   principalType: 'User'
+  canWrite: true
 }
 
 var webAppAccessPolicy = {
   objectId: webApp.identity.principalId
   principalType: 'ServicePrincipal'
+  canWrite: false
 }
 
 var functionsAccessPolicy = {
   objectId: functionsApp.identity.principalId
   principalType: 'ServicePrincipal'
+  canWrite: true
 }
 
 module keyVault 'modules/key-vault.bicep' = {

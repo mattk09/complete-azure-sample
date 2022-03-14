@@ -50,23 +50,11 @@ resource secretOfficerRoleDefinition 'Microsoft.Authorization/roleDefinitions@20
   name: 'b86a8fe4-44ce-4948-aee5-eccb2c155cd7'
 }
 
-/*
-resource roleAssignment 'Microsoft.Authorization/roleAssignments@2021-04-01-preview' = [for i in range(0, length(additionalAccessPolicies)): {
-  name: guid(subscription().id, resourceGroup().id, additionalAccessPolicies[i].objectId, secretReaderRoleDefinition.id, string(i))
-  scope: keyVault
-  properties: {
-    roleDefinitionId: secretReaderRoleDefinition.id
-    principalId: additionalAccessPolicies[i].objectId
-    principalType: additionalAccessPolicies[i].principalType
-  }
-}]
-*/
-
 resource roleAssignment 'Microsoft.Authorization/roleAssignments@2021-04-01-preview' = [for i in range(0, length(additionalAccessPolicies)): {
   name: guid(subscription().id, resourceGroup().id, additionalAccessPolicies[i].objectId, secretOfficerRoleDefinition.id, string(i))
   scope: keyVault
   properties: {
-    roleDefinitionId: secretOfficerRoleDefinition.id
+    roleDefinitionId: (additionalAccessPolicies[i].canWrite ? secretOfficerRoleDefinition.id : secretReaderRoleDefinition.id)
     principalId: additionalAccessPolicies[i].objectId
     principalType: additionalAccessPolicies[i].principalType
   }
