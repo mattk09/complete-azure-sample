@@ -2,6 +2,8 @@ name: dotnet build and push
 
 on:
   push:
+    branches:
+    - main
 
 env:
   DOTNET_VERSION: 6.0.x
@@ -20,7 +22,7 @@ jobs:
 
     - uses: actions/checkout@v2
 
-    - name: Use Github Container Registry if no secrets are set
+    - name: Use GitHub Container Registry if no secrets are set
       if: ${{ env.CONTAINER_REGISTRY_URL == '' }}
       run: |
         echo "CONTAINER_REGISTRY_URL=ghcr.io" >> $GITHUB_ENV
