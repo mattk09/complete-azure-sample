@@ -11,6 +11,9 @@ namespace Sample.Functions
     {
         public override void ConfigureAppConfiguration(IFunctionsConfigurationBuilder builder)
         {
+            /*
+            base.ConfigureAppConfiguration(builder);
+
             var builtConfig = builder.ConfigurationBuilder.Build();
             var keyVaultName = builtConfig["KeyVaultNameFromDeployment"];
 
@@ -20,6 +23,7 @@ namespace Sample.Functions
                     new Uri($"https://{keyVaultName}.vault.azure.net/"),
                     new DefaultAzureCredential());
             }
+            */
         }
 
         public override void Configure(IFunctionsHostBuilder builder)
