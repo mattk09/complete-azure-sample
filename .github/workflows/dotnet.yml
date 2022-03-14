@@ -197,7 +197,7 @@ jobs:
             --function-name HelloWorldSecure > /dev/null
 
           echo "Testing healthcheck..."
-          curl $HOST_TO_TEST -k -s -f -o /dev/null && true || false
+          curl $HOST_TO_TEST --retry 10 --retry-delay 5 --silent --fail --output /dev/null && true || false
 
     - name: Deploy Sample.WebApi
       uses: azure/webapps-deploy@v2
@@ -216,7 +216,7 @@ jobs:
           set -euo pipefail
 
           echo "Testing healthcheck..."
-          curl $HOST_TO_TEST -k -s -f -o /dev/null && true || false
+          curl $HOST_TO_TEST --retry 10 --retry-delay 5 --silent --fail --output /dev/null && true || false
 
     - name: Save deployment output
       env:
