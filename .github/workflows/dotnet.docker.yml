@@ -3,7 +3,6 @@ name: dotnet build and push
 on:
   push:
     branches:
-    - main
 
 env:
   # By default this pushes to ghcr.io, set secrets to override
