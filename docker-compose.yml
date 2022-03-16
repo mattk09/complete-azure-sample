@@ -1,4 +1,4 @@
-version: '3.4'
+version: '3.9'
 
 networks:
   sample-netowrk:
@@ -11,21 +11,27 @@ volumes:
 services:
 
   sample-webapi:
-    build: ./docker/sample-webapi
+    build:
+      context: .
+      dockerfile: ./docker/sample-webapi/Dockerfile
+    environment:
+      - FunctionsAppHostName=sample-functions
     ports:
       - 8081:80
     networks:
       - sample-netowrk
 
   sample-functions:
-    build: ./docker/sample-functions
+    build:
+      context: .
+      dockerfile: ./docker/sample-functions/Dockerfile
     ports:
       - 8082:80
     networks:
       - sample-netowrk
 
   prometheus:
-    image: prometheus/prometheus
+    image: prom/prometheus
     ports:
       - 9090:9090
     volumes:
