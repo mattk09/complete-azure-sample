@@ -1,0 +1,18 @@
+scrape_configs:
+
+  - job_name: prometheus
+    static_configs:
+    - targets:
+      - localhost:9090
+
+  - job_name: aspnetcore-prometheus
+    scrape_interval: 15s
+    scrape_timeout: 10s
+    scheme: http
+    metrics_path: /metrics
+    static_configs:
+    - targets:
+      - aspnetcore-1:80
+      - aspnetcore-2:80
+      - aspnetcorebackend-1:80
+      - rabbitmq:15692
