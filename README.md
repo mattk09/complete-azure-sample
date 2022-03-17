@@ -1,8 +1,8 @@
 # Introduction
 
-This project is meant to be a general starting point for most common dotnet projects, provides a boiler plate code for basic core engineering fundamentals, like observability, testing, security, and CI/CD, including industry known best practices.
+This project is meant to be a general starting point for most common dotnet projects.  It provides boiler plate code for basic core engineering fundamentals, like observability, testing, security, and CI/CD.
 
-Depending on your project needs, you may not need all components or pieces included, perhaps, others may be missing, however, this should give you a great foundation to begin with.
+Depending on your project needs, you may not need all the components or pieces included, perhaps, others may be missing.  However, this should give you a great foundation to begin with.
 
 ## Project Features
 
@@ -55,7 +55,7 @@ Tools needed:
 - [net 6.0][dotnet-install]
 - [az cli][az-cli]
 
-A service principal can be created from the command line by following these steps:
+A service principal can be created from the command line by following these steps in bash (minor tweaks for powershell):
 
 ```bash
 # login from browser
@@ -68,17 +68,41 @@ az account set --subscription "Your Subscription Name"
 az account show
 
 AZURE_SUBSCRIPTION_ID=$(az account show --query "id" --output tsv)
-
+SERVICE_PRINCIPAL_NAME="github-actions-2"
 # Create the sp with contributor role over your subscription (Note: you can limit it down to a specific resource group for tighter access control)
 # Take this output for your GitHub secret and save as 'AZURE_CREDENTIALS'
 az ad sp create-for-rbac \
-    --name "github-actions" \
+    --name $SERVICE_PRINCIPAL_NAME\
     --role contributor \
     --scopes /subscriptions/$AZURE_SUBSCRIPTION_ID \
     --sdk-auth
 
 # Validate
-az ad sp list --display-name 'github-actions'
+az ad sp list --display-name 'github-actions-for-sample'
+
+SERVICE_PRINCIPAL_ID=$(az ad sp list --display-name $SERVICE_PRINCIPAL_NAME --query "[0].objectId" --output tsv)
+ROLE_NAME="Custom Authorization Contributor for $SERVICE_PRINCIPAL_NAME"
+# Create role that can assign
+az role definition create --role-definition "{
+        \"Name\": \"$ROLE_NAME\",
+        \"Description\": \"Ability to assign roles\",
+        \"Actions\": [
+          \"Microsoft.Authorization/roleAssignments/write\"
+        ],
+        \"DataActions\": [
+        ],
+        \"NotDataActions\": [
+        ],
+        \"NotActions\": [
+          \"Microsoft.Authorization/*/Delete\"
+        ],
+        \"AssignableScopes\": [\"/subscriptions/$AZURE_SUBSCRIPTION_ID\"]
+    }"
+
+# Validate
+az role definition list --name $ROLE_NAME
+
+az role assignment create --assignee $SERVICE_PRINCIPAL_ID --role "$ROLE_NAME"
 ```
 
 [naming]: https://docs.microsoft.com/en-us/dotnet/standard/design-guidelines/naming-guidelines
