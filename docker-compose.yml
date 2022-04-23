@@ -1,10 +1,11 @@
 version: '3.9'
 
 networks:
-  sample-netowrk:
+  sample-network:
 
 volumes:
     grafana_data:
+    prometheus_data:
     logger_data:
     db_data:
 
@@ -19,7 +20,7 @@ services:
     ports:
       - 8081:80
     networks:
-      - sample-netowrk
+      - sample-network
 
   sample-functions:
     build:
@@ -28,16 +29,17 @@ services:
     ports:
       - 8082:80
     networks:
-      - sample-netowrk
+      - sample-network
 
   prometheus:
     image: prom/prometheus
     ports:
       - 9090:9090
     volumes:
-      - ./docker/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - ./docker/prometheus:/etc/prometheus
+      - prometheus_data:/prometheus
     networks:
-      - sample-netowrk
+      - sample-network
 
   grafana:
       image : grafana/grafana
@@ -53,4 +55,4 @@ services:
         - ./docker/grafana/provisioning/dashboards:/etc/grafana/provisioning/dashboards
         - ./docker/grafana/provisioning/datasources:/etc/grafana/provisioning/datasources
       networks:
-        - sample-netowrk
+        - sample-network
