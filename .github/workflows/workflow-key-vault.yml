@@ -39,6 +39,8 @@ jobs:
 
     - name: Deploy bicep 💪
       id: azure-deploy
+      env:
+        AZURE_CREDENTIALS: ${{ secrets.AZURE_CREDENTIALS }}
       uses: azure/arm-deploy@v1
       with:
         subscriptionId: ${{ env.AZURE_SUBSCRIPTION_ID }}
@@ -47,6 +49,7 @@ jobs:
         failOnStdErr: false
         parameters: >-
           developerObjectIdKeyVaultAccessPolicy="${{ secrets.AZURE_DEVELOPER_OBJECT_ID }}"
+          additionalSecrets="$AZURE_CREDENTIALS"
 
     - name: Public Key Artifact
       env:
