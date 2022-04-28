@@ -41,6 +41,26 @@ It is not always easy to see in the code, but this project gains a lot from usin
 - Configure the ILoggerFactory to log to the console, debug, and event source output
 - Enables scope validation on the dependency injection container when EnvironmentName is 'Development'
 
+### Docker
+
+This project comes docker enabled (but not required).  Running in docker is a good way to avoid cluttering your machine with dev tools and frameworks
+
+Building a local image can be done with:
+
+```bash
+# Build a local image
+docker build -t sample-webapi:local -f ./docker/sample-webapi/Dockerfile .
+
+# Run that image and detch
+docker run --publish=8081:80 --rm --detach --name sample-webapi-container sample-webapi:local
+
+# Test it
+curl http://localhost:8081/healthcheck
+
+# Stop container
+docker stop sample-webapi-container
+```
+
 ## Best Practices
 
 - [Naming Conventions][naming]
