@@ -41,6 +41,32 @@ It is not always easy to see in the code, but this project gains a lot from usin
 - Configure the ILoggerFactory to log to the console, debug, and event source output
 - Enables scope validation on the dependency injection container when EnvironmentName is 'Development'
 
+### Docker
+
+This project comes docker enabled (but not required).  Running in docker is a good way to avoid cluttering your machine with dev tools and frameworks
+
+Building a local image can be done with:
+
+```bash
+# Build a local image
+docker build -t sample-webapi:local -f ./docker/sample-webapi/Dockerfile .
+
+# Run that image and detch
+docker run --publish=8081:80 --rm --detach --name sample-webapi-container sample-webapi:local
+
+# Test it
+curl http://localhost:8081/healthcheck
+
+# Stop container
+docker stop sample-webapi-container
+```
+
+Bring up all the services with [docker-compose][docker-compose]
+
+```bash
+docker-compose up
+```
+
 ## Best Practices
 
 - [Naming Conventions][naming]
@@ -118,3 +144,5 @@ az role assignment create --assignee $SERVICE_PRINCIPAL_ID --role "$ROLE_NAME"
 [github-actions]: https://docs.github.com/en/actions/learn-github-actions/understanding-github-actions
 [github-secrets]: https://docs.github.com/en/actions/security-guides/encrypted-secrets#creating-encrypted-secrets-for-a-repository
 [az-cli]: https://docs.microsoft.com/en-us/cli/azure/install-azure-cli
+
+[docker-compose]: https://docs.docker.com/compose/reference/up/

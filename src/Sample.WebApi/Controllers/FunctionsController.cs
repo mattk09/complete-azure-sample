@@ -13,11 +13,13 @@ namespace Sample.Controllers
     {
         private readonly IHttpClientFactory httpClientFactory;
         private readonly IConfiguration configuration;
+        private readonly string uriScheme = "https";
 
         public FunctionsController(IHttpClientFactory httpClientFactory, IConfiguration configuration)
         {
             this.httpClientFactory = Guard.ThrowIfNull(httpClientFactory, nameof(httpClientFactory));
             this.configuration = Guard.ThrowIfNull(configuration, nameof(configuration));
+            this.uriScheme = this.configuration.GetValue<string>("FunctionsAppHostNameScheme", this.uriScheme);
         }
 
         [HttpGet]
@@ -25,7 +27,7 @@ namespace Sample.Controllers
         {
             using var httpClient = this.httpClientFactory.CreateClient();
 
-            httpClient.BaseAddress = new Uri($"https://{this.configuration.GetValue<string>("FunctionsAppHostName")}/api/");
+            httpClient.BaseAddress = new Uri($"{this.uriScheme}://{this.configuration.GetValue<string>("FunctionsAppHostName")}/api/");
 
             var response = await httpClient.GetAsync(new Uri("HelloWorld", UriKind.Relative));
             response.EnsureSuccessStatusCode();
@@ -40,8 +42,8 @@ namespace Sample.Controllers
 
             var code = this.configuration.GetValue<string>("function:helloworldsecure:default");
 
-            httpClient.BaseAddress = new Uri($"https://{this.configuration.GetValue<string>("FunctionsAppHostName")}/api/");
-
+            httpClient.BaseAddress = new Uri($"{this.uriScheme}://{this.configuration.GetValue<string>("FunctionsAppHostName")}/api/");
+            Console.WriteLine($"{httpClient.BaseAddress} + {code}");
             var response = await httpClient.GetAsync(new Uri($"HelloWorldSecure?code={code}", UriKind.Relative));
             response.EnsureSuccessStatusCode();
 

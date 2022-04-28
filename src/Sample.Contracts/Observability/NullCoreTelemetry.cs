@@ -2,7 +2,7 @@
 
 namespace Sample.Observability
 {
-    public class NullCoreTelemetry
+    public class NullCoreTelemetry : ICoreTelemetry
     {
         private static readonly NullCoreTelemetrySpan NullSpan = new ();
 

@@ -14,5 +14,6 @@ RUN dotnet publish -c Release -o build
 FROM mcr.microsoft.com/dotnet/aspnet:6.0
 WORKDIR /sample
 COPY --from=build-env /sample/build .
+
 ENTRYPOINT ["dotnet"]
 CMD ["Sample.WebApi.dll"]
