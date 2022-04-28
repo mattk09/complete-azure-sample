@@ -12,6 +12,9 @@ RUN cd /src/Sample.Functions && \
 # FROM mcr.microsoft.com/azure-functions/dotnet:4-appservice
 FROM mcr.microsoft.com/azure-functions/dotnet:4
 ENV AzureWebJobsScriptRoot=/home/site/wwwroot \
-    AzureFunctionsJobHost__Logging__Console__IsEnabled=true
+    AzureFunctionsJobHost__Logging__Console__IsEnabled=true \
+    AzureWebJobsSecretStorageType=files
+
+ADD ./docker/sample-functions/host.json /azure-functions-host/Secrets/host.json
 
 COPY --from=build-env /home/site/wwwroot /home/site/wwwroot

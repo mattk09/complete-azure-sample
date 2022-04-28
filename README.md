@@ -61,6 +61,12 @@ curl http://localhost:8081/healthcheck
 docker stop sample-webapi-container
 ```
 
+Bring up all the services with [docker-compose][docker-compose]
+
+```bash
+docker-compose up
+```
+
 ## Best Practices
 
 - [Naming Conventions][naming]
@@ -138,3 +144,5 @@ az role assignment create --assignee $SERVICE_PRINCIPAL_ID --role "$ROLE_NAME"
 [github-actions]: https://docs.github.com/en/actions/learn-github-actions/understanding-github-actions
 [github-secrets]: https://docs.github.com/en/actions/security-guides/encrypted-secrets#creating-encrypted-secrets-for-a-repository
 [az-cli]: https://docs.microsoft.com/en-us/cli/azure/install-azure-cli
+
+[docker-compose]: https://docs.docker.com/compose/reference/up/

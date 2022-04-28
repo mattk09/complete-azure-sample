@@ -17,6 +17,8 @@ services:
       dockerfile: ./docker/sample-webapi/Dockerfile
     environment:
       - FunctionsAppHostName=sample-functions
+      - FunctionsAppHostNameScheme=http
+      - function__helloworldsecure__default=asGmO6TCW/t42krL9CljNod3uG9aji4mJsQ7==
     ports:
       - 8081:80
     networks:
