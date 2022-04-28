@@ -64,6 +64,7 @@ docker stop sample-webapi-container
 Bring up all the services with [docker-compose][docker-compose]
 
 ```bash
+docker-compose build
 docker-compose up
 ```
 

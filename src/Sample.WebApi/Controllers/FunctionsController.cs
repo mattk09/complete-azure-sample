@@ -43,7 +43,7 @@ namespace Sample.Controllers
             var code = this.configuration.GetValue<string>("function:helloworldsecure:default");
 
             httpClient.BaseAddress = new Uri($"{this.uriScheme}://{this.configuration.GetValue<string>("FunctionsAppHostName")}/api/");
-            Console.WriteLine($"{httpClient.BaseAddress} + {code}");
+
             var response = await httpClient.GetAsync(new Uri($"HelloWorldSecure?code={code}", UriKind.Relative));
             response.EnsureSuccessStatusCode();
 

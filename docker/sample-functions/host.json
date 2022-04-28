@@ -1,13 +1,13 @@
 {
     "masterKey": {
         "name": "master",
-        "value": "asGmO6TCW/t42krL9CljNod3uG9aji4mJsQ7==",
+        "value": "local-default-master-key",
         "encrypted": false
     },
     "functionKeys": [
         {
             "name": "default",
-            "value": "asGmO6TCW/t42krL9CljNod3uG9aji4mJsQ7==",
+            "value": "local-default-function-key",
             "encrypted": false
         }
     ]
