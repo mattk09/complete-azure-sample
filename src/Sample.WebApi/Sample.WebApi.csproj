@@ -25,6 +25,7 @@
     <ProjectReference Include="..\Sample.Contracts\Sample.Contracts.csproj" />
     <ProjectReference Include="..\Sample.Observability.Prometheus\Sample.Observability.Prometheus.csproj" />
     <ProjectReference Include="..\Sample.Observability.ApplicationInsights\Sample.Observability.ApplicationInsights.csproj" />
+    <ProjectReference Include="..\Sample.Observability.OpenTelemetry\Sample.Observability.OpenTelemetry.csproj" />
   </ItemGroup>
 
 </Project>

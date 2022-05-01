@@ -6,7 +6,7 @@ namespace Sample.Observability
 {
     public static class OpenTelemetryExtensions
     {
-        public static IServiceCollection AddOpenTelemetry(this IServiceCollection services, string serviceName, string serviceVersion, params string[] sources)
+        public static IServiceCollection AddOpenCoreTelemetry(this IServiceCollection services, string serviceName, string serviceVersion, params string[] sources)
         {
             services.AddSingleton<ICoreTelemetry, OpenTelemetryAdapter>();
 

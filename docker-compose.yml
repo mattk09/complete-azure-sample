@@ -16,6 +16,7 @@ services:
       context: .
       dockerfile: ./docker/sample-webapi/Dockerfile
     environment:
+      - TelemetryProvider=OpenTelemetry
       - FunctionsAppHostName=sample-functions
       - FunctionsAppHostNameScheme=http
       - function__helloworldsecure__default=asGmO6TCW/t42krL9CljNod3uG9aji4mJsQ7==
