@@ -18,6 +18,8 @@ services:
     environment:
       - Features__UseStorageSimulator=true
       - TelemetryProvider=OpenTelemetry
+      - OpenTelemetrySettings__JaegerExporterHost=jaeger
+      - OpenTelemetrySettings__JaegerExporterPort=6831
       - FunctionsAppHostName=sample-functions
       - FunctionsAppHostNameScheme=http
       - function__helloworldsecure__default=asGmO6TCW/t42krL9CljNod3uG9aji4mJsQ7==
