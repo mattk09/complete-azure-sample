@@ -16,6 +16,7 @@ services:
       context: .
       dockerfile: ./docker/sample-webapi/Dockerfile
     environment:
+      - Features__UseStorageSimulator=true
       - TelemetryProvider=OpenTelemetry
       - FunctionsAppHostName=sample-functions
       - FunctionsAppHostNameScheme=http
@@ -69,6 +70,6 @@ services:
       - 6832:6832/udp
       - 9411:9411
       - 14268:14268
-      - 16686:16686
+      - 16686:16686 # Use this for browser navigation
     networks:
       - sample-network

@@ -38,7 +38,7 @@ namespace Sample
             services = settings.TelemetryProvider switch
             {
                 TelemetryProvider.ApplicationInsights => services.AddApplicationInsightsCoreTelemetry(this.Configuration),
-                TelemetryProvider.OpenTelemetry => services.AddOpenCoreTelemetry(Assembly.GetCallingAssembly().FullName, "0.1"),
+                TelemetryProvider.OpenTelemetry => services.AddOpenCoreTelemetry(Assembly.GetExecutingAssembly().GetName().Name, "0.1"),
                 _ => services.AddSingleton<ICoreTelemetry, NullCoreTelemetry>(),
             };
 
