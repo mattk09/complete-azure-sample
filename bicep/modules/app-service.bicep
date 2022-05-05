@@ -1,13 +1,13 @@
-@description('Base name for the web app.')
+@description('Base name for the app service.')
 param name string = resourceGroup().name
 
-@description('Location for the storage account.')
+@description('Location for the app service.')
 param location string = resourceGroup().location
 
 @description('AppServicePlan name for the web app to run under.')
 param appServicePlanName string
 
-@description('Name of the Key Vault use for configuration.')
+@description('Name of the Key Vault to use for configuration.')
 param keyVaultNameForConfiguration string
 
 @description('Name of functions api.')

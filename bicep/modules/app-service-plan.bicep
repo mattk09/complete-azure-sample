@@ -1,7 +1,7 @@
-@description('Base name for the web app.')
+@description('Base name for the app service.')
 param name string = resourceGroup().name
 
-@description('Location for the storage account.')
+@description('Location for the app service.')
 param location string = resourceGroup().location
 
 resource appServicePlan 'Microsoft.Web/serverfarms@2020-06-01' = {

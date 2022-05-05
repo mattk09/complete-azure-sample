@@ -31,7 +31,6 @@ param additionalSecrets object = {
 param storageAccountSku string = 'Standard_LRS'
 
 var storageAccountName = toLower(take(replace(replace(name, '-', ''), '_', ''), 24))
-var appInsightsName = name
 var functionsAppName = '${name}-functions'
 var keyVaultName = toLower(take(replace(name, '_', ''), 24))
 
@@ -53,13 +52,16 @@ module storageAccount 'modules/storage-account.bicep' = {
   }
 }
 
-resource appInsights 'Microsoft.Insights/components@2020-02-02' = {
-  name: appInsightsName
-  location: location
-  kind: 'web'
-  properties: {
-    Application_Type: 'web'
+module applicationInsights 'modules/application-insights.bicep' = {
+  name: 'applicationInsights'
+  params: {
+    name: name
+    location: location
   }
+}
+
+resource appInsights 'Microsoft.Insights/components@2020-02-02' existing = {
+  name: name
 }
 
 var devAccessPolicy = {
