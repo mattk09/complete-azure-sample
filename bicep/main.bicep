@@ -30,15 +30,18 @@ param additionalSecrets object = {
 ])
 param storageAccountSku string = 'Standard_LRS'
 
-var appServicePlanName = name
-var appServicePlanSku = {
-  name: 'B1'
-}
-var webAppName = name
 var storageAccountName = toLower(take(replace(replace(name, '-', ''), '_', ''), 24))
 var appInsightsName = name
 var functionsAppName = '${name}-functions'
 var keyVaultName = toLower(take(replace(name, '_', ''), 24))
+
+module appServicePlan 'modules/app-service-plan.bicep' = {
+  name: 'appServicePlan'
+  params: {
+    name: name
+    location: location
+  }
+}
 
 module storageAccount 'modules/storage-account.bicep' = {
   name: 'storageAccount'
@@ -47,42 +50,6 @@ module storageAccount 'modules/storage-account.bicep' = {
     location: location
     storageAccountSku: storageAccountSku
     usePrivateEndpoint: false
-  }
-}
-
-resource appServicePlan 'Microsoft.Web/serverfarms@2020-06-01' = {
-  name: appServicePlanName
-  location: location
-  sku: appServicePlanSku
-  kind: 'linux'
-  properties: {
-    reserved: true
-  }
-}
-
-resource webApp 'Microsoft.Web/sites@2021-03-01' = {
-  name: webAppName
-  location: location
-  identity: {
-    type: 'SystemAssigned'
-  }
-  kind: 'app'
-  properties: {
-    serverFarmId: appServicePlan.id
-    siteConfig: {
-      linuxFxVersion: 'DOTNETCORE|6.0'
-      healthCheckPath: 'healthcheck'
-    }
-    httpsOnly: true
-  }
-}
-
-resource webAppAppsettings 'Microsoft.Web/sites/config@2021-03-01' = {
-  parent: webApp
-  name: 'appsettings'
-  properties: {
-    KeyVaultNameFromDeployment: keyVault.name
-    FunctionsAppHostName : functionsApp.properties.defaultHostName
   }
 }
 
@@ -102,7 +69,7 @@ var devAccessPolicy = {
 }
 
 var webAppAccessPolicy = {
-  objectId: webApp.identity.principalId
+  objectId: webApp.outputs.webAppPrincipalId
   principalType: 'ServicePrincipal'
   canWrite: false
 }
@@ -120,7 +87,7 @@ resource storageAccountExisting 'Microsoft.Storage/storageAccounts@2021-08-01' e
 var storageAccountConnectionString = 'DefaultEndpointsProtocol=https;AccountName=${storageAccountName};AccountKey=${storageAccountExisting.listKeys().keys[0].value}'
 
 module keyVault 'modules/key-vault.bicep' = {
-  name: keyVaultName
+  name: 'keyVault'
   params: {
     name: keyVaultName
     location: location
@@ -152,7 +119,7 @@ resource functionsApp 'Microsoft.Web/sites@2021-03-01' = {
   }
   kind: 'functionapp,linux'
   properties: {
-    serverFarmId: appServicePlan.id
+    serverFarmId: appServicePlan.outputs.appServicePlanId
     reserved: true
     siteConfig: {
       healthCheckPath: 'api/healthcheck'
@@ -191,9 +158,19 @@ resource functionsApp 'Microsoft.Web/sites@2021-03-01' = {
   }
 }
 
+module webApp 'modules/app-service.bicep' = {
+  name: 'appService'
+  params: {
+    location: location
+    appServicePlanName: appServicePlan.outputs.appServicePlanName
+    keyVaultNameForConfiguration: keyVaultName
+    functionsAppHostName: functionsApp.properties.defaultHostName
+  }
+}
+
 output storageEndpoint object = storageAccount.outputs.storageEndpoint
-output webAppName string = webApp.name
-output webAppEndpoint string = 'https://${webApp.properties.defaultHostName}/'
-output webAppHealthCheckEndpoint string = 'https://${webApp.properties.defaultHostName}/healthcheck'
+output webAppName string = webApp.outputs.webAppName
+output webAppEndpoint string = 'https://${webApp.outputs.webAppDefaultHostName}/'
+output webAppHealthCheckEndpoint string = 'https://${webApp.outputs.webAppDefaultHostName}/healthcheck'
 output functionsAppName string = functionsApp.name
 output functionsAppHealthCheckEndpoint string = 'https://${functionsApp.properties.defaultHostName}/api/healthcheck'
