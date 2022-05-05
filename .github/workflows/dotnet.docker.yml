@@ -3,6 +3,12 @@ name: dotnet build and push
 on:
   push:
     branches:
+    paths:
+    - .github/workflows/dotnet.docker.yml
+    - src/**
+    - docker/**
+    - ./Sample.Project.Template.sln
+    - ./docker-compose.yml
 
 env:
   # By default this pushes to ghcr.io, set secrets to override
