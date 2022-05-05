@@ -1,3 +1,4 @@
+using System.Reflection;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -34,9 +35,13 @@ namespace Sample
             // Add the the proper ISampleStorage and related services based on configuration
             services.AddSampleStorage(settings);
 
-            // By default this will look for 'ApplicationInsights:InstrumentationKey' in the configuration.
-            // This is added automatically by our 'AddAzureKeyVault' call in Program.cs
-            services.AddCoreTelemetry(this.Configuration);
+            services = settings.TelemetryProvider switch
+            {
+                TelemetryProvider.ApplicationInsights => services.AddApplicationInsightsCoreTelemetry(this.Configuration),
+                TelemetryProvider.OpenTelemetry => services.AddOpenCoreTelemetry(settings.OpenTelemetrySettings),
+                _ => services.AddSingleton<ICoreTelemetry, NullCoreTelemetry>(),
+            };
+
             services.AddHttpClient();
 
             services.AddControllers();
