@@ -2,7 +2,7 @@
   "version": "2.0.0",
   "tasks": [
     {
-      "label": "build",
+      "label": "build dotnet sln",
       "command": "dotnet",
       "type": "shell",
       "args": [
@@ -17,31 +17,78 @@
       "problemMatcher": "$msCompile"
     },
     {
-      "label": "test",
+      "label": "test dotnet sln",
       "command": "dotnet",
       "type": "shell",
       "args": [
-        "test",
-        "${workspaceFolder}"
-      ],
-      "problemMatcher": "$msCompile",
-      "dependsOn": [
-        "build"
+        "build",
+        "/property:GenerateFullPaths=true",
+        "/consoleloggerparameters:NoSummary"
       ],
       "group": {
-        "kind": "test",
+        "kind": "build",
         "isDefault": true
-      }
+      },
+      "problemMatcher": "$msCompile"
     },
     {
+      "label": "start Sample.Functions locally",
       "type": "func",
-      "dependsOn": "build",
+      "dependsOn": [
+        "build dotnet sln"
+      ],
       "options": {
         "cwd": "${workspaceFolder}/src/Sample.Functions/bin/Debug/net6.0"
       },
       "command": "host start",
       "isBackground": true,
       "problemMatcher": "$func-dotnet-watch"
+    },
+    {
+      "label": "build main.bicep",
+      "command": "az",
+      "type": "shell",
+      "args": [
+          "bicep",
+          "build",
+          "--file",
+          "${workspaceFolder}/bicep/main.bicep",
+          "--stdout"
+      ],
+      "group": {
+          "kind": "build",
+      },
+      "presentation": {
+          "reveal": "silent"
+      },
+      "problemMatcher": "$msCompile"
+    },
+    {
+      "label": "build dotnet sln through docker-compose",
+      "command": "docker-compose",
+      "type": "shell",
+      "args": [
+        "build"
+      ],
+      "problemMatcher": "$msCompile",
+      "group": {
+        "kind": "build",
+      }
+    },
+    {
+      "label": "run dotnet sln through docker-compose",
+      "command": "docker-compose",
+      "type": "shell",
+      "args": [
+        "up"
+      ],
+      "problemMatcher": "$msCompile",
+      "dependsOn": [
+        "build dotnet sln through docker-compose"
+      ],
+      "group": {
+        "kind": "none"
+      }
     }
   ]
 }

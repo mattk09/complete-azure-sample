@@ -40,16 +40,15 @@ var appInsightsName = name
 var functionsAppName = '${name}-functions'
 var keyVaultName = toLower(take(replace(name, '_', ''), 24))
 
-resource storageAccount 'Microsoft.Storage/storageAccounts@2021-04-01' = {
-  name: storageAccountName
-  kind: 'StorageV2'
-  location: location
-  sku: {
-    name: storageAccountSku
+module storageAccount 'modules/storage-account.bicep' = {
+  name: 'storageAccount'
+  params: {
+    name: storageAccountName
+    location: location
+    storageAccountSku: storageAccountSku
+    usePrivateEndpoint: false
   }
 }
-
-var storageAccountConnectionString = 'DefaultEndpointsProtocol=https;AccountName=${storageAccountName};AccountKey=${storageAccount.listKeys().keys[0].value}'
 
 resource appServicePlan 'Microsoft.Web/serverfarms@2020-06-01' = {
   name: appServicePlanName
@@ -78,7 +77,7 @@ resource webApp 'Microsoft.Web/sites@2021-03-01' = {
   }
 }
 
-resource webApp_appsettings 'Microsoft.Web/sites/config@2021-03-01' = {
+resource webAppAppsettings 'Microsoft.Web/sites/config@2021-03-01' = {
   parent: webApp
   name: 'appsettings'
   properties: {
@@ -113,6 +112,12 @@ var functionsAccessPolicy = {
   principalType: 'ServicePrincipal'
   canWrite: true
 }
+
+resource storageAccountExisting 'Microsoft.Storage/storageAccounts@2021-08-01' existing = {
+  name: storageAccountName
+}
+
+var storageAccountConnectionString = 'DefaultEndpointsProtocol=https;AccountName=${storageAccountName};AccountKey=${storageAccountExisting.listKeys().keys[0].value}'
 
 module keyVault 'modules/key-vault.bicep' = {
   name: keyVaultName
@@ -186,7 +191,7 @@ resource functionsApp 'Microsoft.Web/sites@2021-03-01' = {
   }
 }
 
-output storageEndpoint object = storageAccount.properties.primaryEndpoints
+output storageEndpoint object = storageAccount.outputs.storageEndpoint
 output webAppName string = webApp.name
 output webAppEndpoint string = 'https://${webApp.properties.defaultHostName}/'
 output webAppHealthCheckEndpoint string = 'https://${webApp.properties.defaultHostName}/healthcheck'
