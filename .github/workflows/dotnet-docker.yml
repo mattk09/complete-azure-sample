@@ -4,7 +4,7 @@ on:
   push:
     branches:
     paths:
-    - .github/workflows/dotnet.docker.yml
+    - .github/workflows/dotnet-docker.yml
     - src/**
     - docker/**
     - ./Sample.Project.Template.sln
