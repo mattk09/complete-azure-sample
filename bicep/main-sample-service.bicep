@@ -60,7 +60,7 @@ module applicationInsights 'modules/application-insights.bicep' = {
   }
 }
 
-resource appInsights 'Microsoft.Insights/components@2020-02-02' existing = {
+resource applicationInsightsExisting 'Microsoft.Insights/components@2020-02-02' existing = {
   name: name
 }
 
@@ -77,7 +77,7 @@ var webAppAccessPolicy = {
 }
 
 var functionsAccessPolicy = {
-  objectId: functionsApp.identity.principalId
+  objectId: functionsApp.outputs.functionsAppPrincipalId
   principalType: 'ServicePrincipal'
   canWrite: true
 }
@@ -101,7 +101,7 @@ module keyVault 'modules/key-vault.bicep' = {
         }
         {
           name: 'ApplicationInsights--InstrumentationKey'
-          secret: appInsights.properties.InstrumentationKey
+          secret: applicationInsightsExisting.properties.InstrumentationKey
         }
       ], additionalSecrets.secrets)
     }
@@ -113,50 +113,15 @@ module keyVault 'modules/key-vault.bicep' = {
   }
 }
 
-resource functionsApp 'Microsoft.Web/sites@2021-03-01' = {
-  name: functionsAppName
-  location: location
-  identity: {
-    type: 'SystemAssigned'
-  }
-  kind: 'functionapp,linux'
-  properties: {
-    serverFarmId: appServicePlan.outputs.appServicePlanId
-    reserved: true
-    siteConfig: {
-      healthCheckPath: 'api/healthcheck'
-      appSettings: [
-        {
-          // I would prefer this comes from KeyVault, but the functions runtime consumes this before KV can be applied right now
-          name: 'APPINSIGHTS_INSTRUMENTATIONKEY'
-          value: appInsights.properties.InstrumentationKey
-        }
-        {
-          name: 'AzureWebJobsStorage'
-          value: storageAccountConnectionString
-        }
-        {
-          name: 'FUNCTIONS_WORKER_RUNTIME'
-          value: 'dotnet'
-        }
-        {
-          name: 'FUNCTIONS_EXTENSION_VERSION'
-          value: '~4'
-        }
-        {
-          name: 'KeyVaultNameFromDeployment'
-          value: keyVaultName
-        }
-        {
-          name: 'AzureWebJobsSecretStorageType'
-          value: 'keyvault'
-        }
-        {
-          name: 'AzureWebJobsSecretStorageKeyVaultUri'
-          value: 'https://${keyVaultName}${environment().suffixes.keyvaultDns}/'
-        }
-      ]
-    }
+module functionsApp 'modules/functions.bicep' = {
+  name: 'functionsService'
+  params: {
+    name: functionsAppName
+    location: location
+    appServicePlanName: appServicePlan.outputs.appServicePlanName
+    keyVaultNameForConfiguration: keyVaultName
+    storageAccountName: storageAccountExisting.name
+    applicationInsightsName: applicationInsightsExisting.name
   }
 }
 
@@ -166,7 +131,7 @@ module webApp 'modules/app-service.bicep' = {
     location: location
     appServicePlanName: appServicePlan.outputs.appServicePlanName
     keyVaultNameForConfiguration: keyVaultName
-    functionsAppHostName: functionsApp.properties.defaultHostName
+    functionsAppHostName: functionsApp.outputs.functionsAppDefaultHostName
   }
 }
 
@@ -174,5 +139,5 @@ output storageEndpoint object = storageAccount.outputs.storageEndpoint
 output webAppName string = webApp.outputs.webAppName
 output webAppEndpoint string = 'https://${webApp.outputs.webAppDefaultHostName}/'
 output webAppHealthCheckEndpoint string = 'https://${webApp.outputs.webAppDefaultHostName}/healthcheck'
-output functionsAppName string = functionsApp.name
-output functionsAppHealthCheckEndpoint string = 'https://${functionsApp.properties.defaultHostName}/api/healthcheck'
+output functionsAppName string = functionsApp.outputs.functionsAppName
+output functionsAppHealthCheckEndpoint string = 'https://${functionsApp.outputs.functionsAppDefaultHostName}/api/healthcheck'

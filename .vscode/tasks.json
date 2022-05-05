@@ -45,14 +45,14 @@
       "problemMatcher": "$func-dotnet-watch"
     },
     {
-      "label": "build main.bicep",
+      "label": "build main-sample-service.bicep",
       "command": "az",
       "type": "shell",
       "args": [
           "bicep",
           "build",
           "--file",
-          "${workspaceFolder}/bicep/main.bicep",
+          "${workspaceFolder}/bicep/main-sample-service.bicep",
           "--stdout"
       ],
       "group": {

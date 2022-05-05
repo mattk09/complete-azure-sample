@@ -24,7 +24,7 @@ on:
     branches:
     paths:
     - .github/workflows/dotnet.yml
-    - bicep/main.bicep
+    - bicep/main-sample-service.bicep
     - src/**
   pull_request:
     branches: [ main ]
@@ -35,12 +35,12 @@ env:
   AZURE_RESOURCE_GROUP_LOCATION: ${{ github.event.inputs.location || 'centralus' }}
   AZURE_DEPLOYMENT_NAME: ${{ format('sample.{0}.{1}', github.actor, github.run_id) }}
   AZURE_DEPLOYMENT_MODE: >-
-    ${{ 
-      github.event.inputs.deployment-mode || 
+    ${{
+      github.event.inputs.deployment-mode ||
       (github.ref == 'refs/heads/main' && 'Complete' || 'Validate')
     }}
   BUILD_CONFIGURATION: Release
-  MAIN_BICEP_TEMPLATE_PATH: ./bicep/main.bicep
+  BICEP_TEMPLATE_PATH: ./bicep/main-sample-service.bicep
   DOTNET_VERSION: 6.0.x
   # These should be pulled from secrets, github will mask the output from being shown in logs
   ADDITIONAL_KEY_VAULT_SECRETS: >-
@@ -160,7 +160,7 @@ jobs:
         resourceGroupName: ${{ env.AZURE_RESOURCE_GROUP_NAME }}
         deploymentMode: ${{ env.AZURE_DEPLOYMENT_MODE }}
         deploymentName: ${{ env.AZURE_DEPLOYMENT_NAME }}
-        template: ${{ env.MAIN_BICEP_TEMPLATE_PATH }}
+        template: ${{ env.BICEP_TEMPLATE_PATH }}
         failOnStdErr: false
         parameters: >-
           additionalSecrets="${{ env.ADDITIONAL_KEY_VAULT_SECRETS }}"

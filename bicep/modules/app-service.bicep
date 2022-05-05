@@ -4,7 +4,7 @@ param name string = resourceGroup().name
 @description('Location for the app service.')
 param location string = resourceGroup().location
 
-@description('AppServicePlan name for the web app to run under.')
+@description('AppServicePlan name for the app service to run under.')
 param appServicePlanName string
 
 @description('Name of the Key Vault to use for configuration.')
