@@ -22,7 +22,7 @@ services:
       - OpenTelemetrySettings__JaegerExporterPort=6831
       - FunctionsAppHostName=sample-functions
       - FunctionsAppHostNameScheme=http
-      - function__helloworldsecure__default=asGmO6TCW/t42krL9CljNod3uG9aji4mJsQ7==
+      - function__helloworldsecure__default=local-default-function-key # From host.json
     ports:
       - 8081:80
     networks:

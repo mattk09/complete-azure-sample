@@ -21,6 +21,70 @@ Depending on your project needs, you may not need all the components or pieces i
   - [Swashbuckle][swagger-swashbuckle] is another alternative
   - Navigate to `/swagger` endpoint to view
 
+## Best Practices
+
+- [Naming Conventions][naming]
+- [Secret Management][developer-secret-management] during development
+
+## Getting Started
+
+For a successful deployment from GitHub Actions, you will need to connect to azure using a service principal.  This can be setup one time and added to both Actions/Codespace secrets in your [GitHub Secrets][github-secrets].
+
+Tools needed:
+
+- [net 6.0][dotnet-install]
+- [az cli][az-cli]
+
+A service principal can be created from the command line by following these steps in bash (minor tweaks for powershell):
+
+```bash
+# login from browser
+az login --use-device-code
+
+# If you have multiple subscriptions select the one you prefer to deploy into
+az account set --subscription "Your Subscription Name"
+
+# Validate
+az account show
+
+AZURE_SUBSCRIPTION_ID=$(az account show --query "id" --output tsv)
+SERVICE_PRINCIPAL_NAME="github-actions"
+# Create the sp with contributor role over your subscription (Note: you can limit it down to a specific resource group for tighter access control)
+# Take this output for your GitHub secret and save as 'AZURE_CREDENTIALS'
+az ad sp create-for-rbac \
+    --name $SERVICE_PRINCIPAL_NAME\
+    --role contributor \
+    --scopes /subscriptions/$AZURE_SUBSCRIPTION_ID \
+    --sdk-auth
+
+# Validate
+az ad sp list --display-name 'github-actions-for-sample'
+
+SERVICE_PRINCIPAL_ID=$(az ad sp list --display-name $SERVICE_PRINCIPAL_NAME --query "[0].objectId" --output tsv)
+ROLE_NAME="Custom Authorization Contributor for $SERVICE_PRINCIPAL_NAME"
+# Create role that can assign
+az role definition create --role-definition "{
+        \"Name\": \"$ROLE_NAME\",
+        \"Description\": \"Ability to assign roles\",
+        \"Actions\": [
+          \"Microsoft.Authorization/roleAssignments/write\"
+        ],
+        \"DataActions\": [
+        ],
+        \"NotDataActions\": [
+        ],
+        \"NotActions\": [
+          \"Microsoft.Authorization/*/Delete\"
+        ],
+        \"AssignableScopes\": [\"/subscriptions/$AZURE_SUBSCRIPTION_ID\"]
+    }"
+
+# Validate
+az role definition list --name $ROLE_NAME
+
+az role assignment create --assignee $SERVICE_PRINCIPAL_ID --role "$ROLE_NAME"
+```
+
 ## Feature Details
 
 ### Storage
@@ -67,70 +131,15 @@ Bring up all the services with [docker-compose][docker-compose]
 docker-compose build
 docker-compose up
 ```
+Once everything is up, you can find the useful services (configured in [docker-compose.yml](./docker-compose.yml))
 
-## Best Practices
-
-- [Naming Conventions][naming]
-- [Secret Management][developer-secret-management] during development
-
-## Getting Started
-
-For a successful deployment from GitHub Actions, you will need to connect to azure using a service principal.  This can be setup one time and added to both Actions/Codespace secrets in your [GitHub Secrets][githb-secrets].
-
-Tools needed:
-
-- [net 6.0][dotnet-install]
-- [az cli][az-cli]
-
-A service principal can be created from the command line by following these steps in bash (minor tweaks for powershell):
-
-```bash
-# login from browser
-az login --use-device-code
-
-# If you have multiple subscriptions select the one you prefer to deploy into
-az account set --subscription "Your Subscription Name"
-
-# Validate
-az account show
-
-AZURE_SUBSCRIPTION_ID=$(az account show --query "id" --output tsv)
-SERVICE_PRINCIPAL_NAME="github-actions-2"
-# Create the sp with contributor role over your subscription (Note: you can limit it down to a specific resource group for tighter access control)
-# Take this output for your GitHub secret and save as 'AZURE_CREDENTIALS'
-az ad sp create-for-rbac \
-    --name $SERVICE_PRINCIPAL_NAME\
-    --role contributor \
-    --scopes /subscriptions/$AZURE_SUBSCRIPTION_ID \
-    --sdk-auth
-
-# Validate
-az ad sp list --display-name 'github-actions-for-sample'
-
-SERVICE_PRINCIPAL_ID=$(az ad sp list --display-name $SERVICE_PRINCIPAL_NAME --query "[0].objectId" --output tsv)
-ROLE_NAME="Custom Authorization Contributor for $SERVICE_PRINCIPAL_NAME"
-# Create role that can assign
-az role definition create --role-definition "{
-        \"Name\": \"$ROLE_NAME\",
-        \"Description\": \"Ability to assign roles\",
-        \"Actions\": [
-          \"Microsoft.Authorization/roleAssignments/write\"
-        ],
-        \"DataActions\": [
-        ],
-        \"NotDataActions\": [
-        ],
-        \"NotActions\": [
-          \"Microsoft.Authorization/*/Delete\"
-        ],
-        \"AssignableScopes\": [\"/subscriptions/$AZURE_SUBSCRIPTION_ID\"]
-    }"
-
-# Validate
-az role definition list --name $ROLE_NAME
-
-az role assignment create --assignee $SERVICE_PRINCIPAL_ID --role "$ROLE_NAME"
-```
+| Service | Local Url | Description
+|---|---|---|
+| WebApi | http://localhost:8081/ | Our Sample.WebApi |
+| Functions | http://localhost:8082/ | Our Sample.Functions |
+| [Prometheus][prometheus] | http://localhost:9090/ | [CNCF][cncf] project for metrics |
+| [Grafana][grafana] | http://localhost:3000/ | [CNCF][cncf] project for building and viewing dashboards |
+| [Jaeger][jaeger] | http://localhost:16686/ | [CNCF][cncf] project for visualizing distributed tracing |
 
 [naming]: https://docs.microsoft.com/en-us/dotnet/standard/design-guidelines/naming-guidelines
 [developer-secret-management]: https://docs.microsoft.com/en-us/aspnet/core/security/app-secrets?view=aspnetcore-3.1&tabs=windows
@@ -147,3 +156,7 @@ az role assignment create --assignee $SERVICE_PRINCIPAL_ID --role "$ROLE_NAME"
 [az-cli]: https://docs.microsoft.com/en-us/cli/azure/install-azure-cli
 
 [docker-compose]: https://docs.docker.com/compose/reference/up/
+[prometheus]: https://prometheus.io/
+[grafana]: https://grafana.com/
+[jaeger]: https://www.jaegertracing.io/
+[cncf]: https://www.cncf.io/
