@@ -21,12 +21,10 @@
       "command": "dotnet",
       "type": "shell",
       "args": [
-        "build",
-        "/property:GenerateFullPaths=true",
-        "/consoleloggerparameters:NoSummary"
+        "test"
       ],
       "group": {
-        "kind": "build",
+        "kind": "test",
         "isDefault": true
       },
       "problemMatcher": "$msCompile"
