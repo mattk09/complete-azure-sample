@@ -1,4 +1,4 @@
-using System.Reflection;
+using System;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -62,13 +62,14 @@ namespace Sample
                 app.UseHttpsRedirection();
             }
 
-            app.ApplicationServices
-                .GetRequiredService<ICoreMetrics>()
-                .ApplicationInfo();
+            var coreMetrics = app.ApplicationServices.GetRequiredService<ICoreMetrics>();
+            coreMetrics.ApplicationInfo();
 
             // Use middleware to route '/' to swagger
             app.Use(async (context, nextAsync) =>
             {
+                coreMetrics.OnHit(context.Request.Path.Value);
+
                 if (context.Request.Path.Value == "/")
                 {
                     // Rewrite and continue processing
@@ -93,6 +94,17 @@ namespace Sample
                 endpoints.MapControllers();
                 endpoints.MapHealthChecks("healthcheck");
                 endpoints.MapCoreMetrics();
+            });
+
+            // Exception simulator
+            app.Use(async (context, nextAsync) =>
+            {
+                if (context.Request.Path.Value.Contains("exception", StringComparison.OrdinalIgnoreCase))
+                {
+                    throw new InvalidOperationException($"Throw with request {context.Request.Path.Value}");
+                }
+
+                await nextAsync();
             });
         }
     }

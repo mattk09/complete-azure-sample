@@ -7,5 +7,7 @@ namespace Sample.Observability
         void ApplicationInfo();
 
         void OnException(Exception exception);
+
+        void OnHit(string path);
     }
 }

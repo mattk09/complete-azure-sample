@@ -11,5 +11,9 @@ namespace Sample.Observability
         public void OnException(Exception exception)
         {
         }
+
+        public void OnHit(string path)
+        {
+        }
     }
 }
