@@ -8,7 +8,7 @@ COPY .editorconfig .
 
 RUN dotnet restore
 
-RUN dotnet publish -c Release -o build
+RUN dotnet publish -c Release -o build ./src/Sample.WebApi/Sample.WebApi.csproj
 
 # Build runtime image
 FROM mcr.microsoft.com/dotnet/aspnet:6.0
