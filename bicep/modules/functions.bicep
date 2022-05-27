@@ -72,6 +72,10 @@ resource functionsApp 'Microsoft.Web/sites@2021-03-01' = {
           name: 'AzureWebJobsSecretStorageKeyVaultUri'
           value: 'https://${keyVaultNameForConfiguration}${environment().suffixes.keyvaultDns}/'
         }
+        {
+          name: 'TelemetryProvider'
+          value: 'ApplicationInsights'
+        }
       ]
     }
   }

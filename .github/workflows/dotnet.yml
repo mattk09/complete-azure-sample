@@ -181,6 +181,10 @@ jobs:
           #!/bin/bash
           set -euo pipefail
 
+          # Find a better way to retry on transient errors
+          echo "Delay..."
+          sleep 60
+
           echo "Getting key..."
           # Force key creation in the key vault (find better way)
           az functionapp function keys list \

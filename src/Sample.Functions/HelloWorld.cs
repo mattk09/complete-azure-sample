@@ -7,16 +7,19 @@ using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using Sample.Observability;
 
 namespace Sample.Functions
 {
     public class HelloWorld
     {
         private readonly IConfiguration configuration;
+        private readonly ICoreTelemetry telemetry;
 
-        public HelloWorld(IConfiguration configuration)
+        public HelloWorld(IConfiguration configuration, ICoreTelemetry telemetry)
         {
             this.configuration = configuration;
+            this.telemetry = telemetry;
         }
 
         [FunctionName("HelloWorld")]
@@ -24,7 +27,9 @@ namespace Sample.Functions
             [HttpTrigger(AuthorizationLevel.Anonymous, "get", "post", Route = null)] HttpRequest request,
             ILogger log)
         {
-            log.LogInformation("C# HTTP trigger function processed a request.");
+            using var span = this.telemetry.Start($"{nameof(HelloWorld)}-{nameof(RunAsync)}");
+
+            log.LogInformation($"C# HTTP trigger function processed a request: {this.telemetry.GetType().FullName}");
 
             using var reader = new StreamReader(request.Body);
             var requestBody = await reader.ReadToEndAsync();

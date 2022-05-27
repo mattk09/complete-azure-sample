@@ -32,6 +32,11 @@ services:
     build:
       context: .
       dockerfile: ./docker/sample-functions/Dockerfile
+    environment:
+      - TelemetryProvider=OpenTelemetry
+      - OpenTelemetrySettings__JaegerExporterHost=jaeger
+      - OpenTelemetrySettings__JaegerExporterPort=6831
+      - OpenTelemetrySettings__ServiceName=Sample.Functions
     ports:
       - 8082:80
     networks:
