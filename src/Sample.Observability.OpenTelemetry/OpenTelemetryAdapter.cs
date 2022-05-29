@@ -25,7 +25,7 @@ namespace Sample.Observability
 
             public void SetBaggage(string key, string value)
             {
-                this.Activity?.SetBaggage(key, value);
+                OpenTelemetry.Baggage.SetBaggage(key, value);
             }
 
             public void Dispose()

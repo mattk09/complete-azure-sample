@@ -27,7 +27,7 @@ namespace Sample.Functions
             [HttpTrigger(AuthorizationLevel.Anonymous, "get", "post", Route = null)] HttpRequest request,
             ILogger log)
         {
-            using var span = this.telemetry.Start($"{nameof(HelloWorld)}-{nameof(RunAsync)}");
+            using var span = this.telemetry.Start($"Functions-{nameof(HelloWorld)}-{nameof(RunAsync)}");
 
             log.LogInformation($"C# HTTP trigger function processed a request: {this.telemetry.GetType().FullName}");
 
@@ -39,6 +39,13 @@ namespace Sample.Functions
             var responseMessage = string.IsNullOrEmpty(name)
                 ? "This HTTP triggered function executed successfully. Pass a name in the query string or in the request body for a personalized response."
                 : $"Hello, {name}. This HTTP triggered function executed successfully.";
+
+            if (string.IsNullOrWhiteSpace(name))
+            {
+                name = "NA";
+            }
+
+            span.SetTag("tag-name", name);
 
             return new OkObjectResult(responseMessage);
         }
